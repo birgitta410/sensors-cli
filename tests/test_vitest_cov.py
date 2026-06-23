@@ -161,6 +161,26 @@ def test_parse_score_is_int_branch_pct():
 
 
 # ---------------------------------------------------------------------------
+# parse_file_error
+# ---------------------------------------------------------------------------
+
+def test_parse_file_error_returns_failure():
+    parser = VitestCovParser()
+    reading = parser.parse_file_error("coverage/coverage-final.json", "")
+
+    assert reading.success is False
+    assert "failing" in reading.summary.lower()
+    assert "parseError" in reading.extra
+
+
+def test_parse_file_error_summary_mentions_tests():
+    parser = VitestCovParser()
+    reading = parser.parse_file_error("coverage/coverage-final.json", "some stdout")
+
+    assert "tests" in reading.summary.lower()
+
+
+# ---------------------------------------------------------------------------
 # is_watch_run_complete
 # ---------------------------------------------------------------------------
 

@@ -23,6 +23,14 @@ class VitestCovParser(OutputParser):
         result: "coverage/coverage-final.json"
     """
 
+    def parse_file_error(self, path: str, raw_output: str) -> SensorReading:
+        return SensorReading(
+            success=False,
+            summary="Cannot read results, tests might be failing",
+            score=ScoreInfo(value=0, direction="more", description="Branch coverage percentage"),
+            extra={"parseError": f"Coverage file not found: {path}"},
+        )
+
     def is_watch_run_complete(self, line: str) -> bool:
         """Detect vitest watch-mode run completion via stdout."""
         import re

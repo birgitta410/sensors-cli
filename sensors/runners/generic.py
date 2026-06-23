@@ -126,6 +126,13 @@ class GenericRunner:
         if parsed is not None:
             return parsed, "success" if result.success else "failure"
         err = result.output.get("parseError", "Unknown error")
+        if result.output.get("resultFileMissing"):
+            reading = self.parser.parse_file_error(
+                result.output.get("resultFilePath", ""),
+                result.output.get("raw", ""),
+            )
+            if reading is not None:
+                return reading, "failure"
         return SensorReading.from_error(f"Error: {err}"), "failure"
 
     @staticmethod
@@ -213,6 +220,8 @@ class GenericRunner:
             output={
                 "parseError": f"Could not read result file {path}: {last_exc}",
                 "raw": stdout_stripped[:500],
+                "resultFileMissing": True,
+                "resultFilePath": str(path),
             },
         )
 
