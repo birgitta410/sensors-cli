@@ -145,20 +145,23 @@ async def test_spawn_watch_process_wraps_command_and_env() -> None:
 async def test_terminate_watch_process_kills_on_timeout() -> None:
     runner = _runner()
     process = MagicMock()
+    process.pid = 1234
     process.returncode = None
-    process.terminate = MagicMock()
-    process.kill = MagicMock()
     process.wait = AsyncMock(side_effect=[asyncio.TimeoutError(), None, None])
 
-    with patch(
-        "sensors.runners.generic.asyncio.wait_for",
-        new_callable=AsyncMock,
-        side_effect=[asyncio.TimeoutError(), None, None],
-    ):
+    with patch("sensors.runners.generic.os.getpgid", return_value=1234) as mock_getpgid, \
+         patch("sensors.runners.generic.os.killpg") as mock_killpg, \
+         patch(
+             "sensors.runners.generic.asyncio.wait_for",
+             new_callable=AsyncMock,
+             side_effect=[asyncio.TimeoutError(), None, None],
+         ):
         await runner._terminate_watch_process(process)
 
-    process.terminate.assert_called_once()
-    process.kill.assert_called_once()
+    import signal as _signal
+    assert mock_getpgid.call_count == 2
+    mock_killpg.assert_any_call(1234, _signal.SIGTERM)
+    mock_killpg.assert_any_call(1234, _signal.SIGKILL)
 
 
 @pytest.mark.asyncio

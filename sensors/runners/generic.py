@@ -11,6 +11,7 @@ import os
 import platform
 import re
 import shlex
+import signal
 from datetime import datetime
 from pathlib import Path
 
@@ -71,6 +72,7 @@ class GenericRunner:
         self.rerun_event = rerun_event
         self._task: asyncio.Task | None = None
         self._should_stop = False
+        self._current_process: asyncio.subprocess.Process | None = None
 
     async def start(self) -> None:
         """Start the runner in the configured mode.
@@ -96,8 +98,10 @@ class GenericRunner:
             await self._run_interval_mode()
 
     async def stop(self) -> None:
-        """Stop the runner gracefully."""
+        """Stop the runner gracefully, killing any in-flight subprocess."""
         self._should_stop = True
+        if self._current_process is not None and self._current_process.returncode is None:
+            self._kill_process_group(self._current_process, signal.SIGTERM)
         if self.rerun_event is not None:
             self.rerun_event.set()
 
@@ -268,6 +272,7 @@ class GenericRunner:
             stdin=asyncio.subprocess.DEVNULL,
             cwd=self.config.workingDir,
             env=env,
+            start_new_session=True,
         )
 
     async def _parse_watch_accumulated(self, accumulated: list[str]) -> None:
@@ -293,14 +298,28 @@ class GenericRunner:
             logger.exception("[%s] Parse error in watch mode", self.config.name)
         return []
 
-    async def _terminate_watch_process(self, process: asyncio.subprocess.Process) -> None:
-        """Terminate a watch subprocess that is still running."""
+    @staticmethod
+    def _kill_process_group(process: asyncio.subprocess.Process, sig: int) -> None:
+        """Send ``sig`` to the process group of ``process``, falling back to the process itself."""
         try:
-            process.terminate()
+            pgid = os.getpgid(process.pid)
+            os.killpg(pgid, sig)
+        except (ProcessLookupError, PermissionError):
+            # Process already gone or we lost the race; ignore.
+            pass
+        except OSError:
+            # getpgid/killpg unavailable (e.g. Windows) — fall back to direct signal.
+            with contextlib.suppress(Exception):
+                process.send_signal(sig)
+
+    async def _terminate_watch_process(self, process: asyncio.subprocess.Process) -> None:
+        """Terminate a watch subprocess and its entire process group."""
+        try:
+            self._kill_process_group(process, signal.SIGTERM)
             await asyncio.wait_for(process.wait(), timeout=2.0)
         except asyncio.TimeoutError:
             try:
-                process.kill()
+                self._kill_process_group(process, signal.SIGKILL)
                 await asyncio.wait_for(process.wait(), timeout=1.0)
             except Exception:
                 logger.debug("Process cleanup failed during shutdown", exc_info=True)
@@ -385,9 +404,12 @@ class GenericRunner:
                 self.config.command,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.STDOUT,
+                stdin=asyncio.subprocess.DEVNULL,
                 cwd=self.config.workingDir,
                 env=env,
+                start_new_session=True,
             )
+            self._current_process = process
 
             timeout_sec = self.config.commandTimeout
             if timeout_sec is None:
@@ -412,8 +434,12 @@ class GenericRunner:
                     await self.on_result(result, parsed)
 
             except asyncio.TimeoutError:
-                process.kill()
-                await process.wait()
+                self._kill_process_group(process, signal.SIGTERM)
+                with contextlib.suppress(asyncio.TimeoutError):
+                    await asyncio.wait_for(process.wait(), timeout=2.0)
+                if process.returncode is None:
+                    self._kill_process_group(process, signal.SIGKILL)
+                    await process.wait()
                 print(
                     f"[{self.config.name}] Command timed out after {int(timeout_sec)}s"
                 )
@@ -436,6 +462,8 @@ class GenericRunner:
         except Exception as e:
             print(f"[{self.config.name}] Error in interval mode: {e}")
             logger.exception("[%s] Unhandled error in interval mode", self.config.name)
+        finally:
+            self._current_process = None
 
     async def _wait_interval_or_rerun(self, interval_seconds: float) -> None:
         """Sleep for ``interval_seconds`` or until ``rerun_event`` is set (early re-run)."""
