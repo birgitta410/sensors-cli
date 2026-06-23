@@ -46,3 +46,4 @@ state/*.json
 # OS
 .DS_Store
 Thumbs.db
+graphify-out
