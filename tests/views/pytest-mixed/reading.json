@@ -1,0 +1,70 @@
+{
+  "tests": {
+    "success": false,
+    "summary": "2 failed, 10 passed",
+    "score": {
+      "value": 2,
+      "direction": "less",
+      "description": "Number of failing tests and errors",
+      "threshold": null
+    },
+    "findings": [
+      {
+        "message": "def test_divide_by_zero():\n        calculator = Calculator()\n>       result = calculator.divide(10, 0)\nE       ZeroDivisionError: division by zero\n\ntests/test_calculator.py:23: ZeroDivisionError",
+        "severity": "error",
+        "file": "test_divide_by_zero",
+        "line": null,
+        "column": null,
+        "rule": "test_failure",
+        "context": null
+      },
+      {
+        "message": "def test_parse_input():\n        result = parse_input(\"not a number\")\n>       assert result == 0\nE       AssertionError: assert None == 0\n\ntests/test_utils.py:15: AssertionError",
+        "severity": "error",
+        "file": "test_parse_input",
+        "line": null,
+        "column": null,
+        "rule": "test_failure",
+        "context": null
+      }
+    ],
+    "metrics": [
+      {
+        "key": "passed",
+        "label": "Passed",
+        "value": 10,
+        "unit": null,
+        "direction": "more",
+        "threshold": null
+      },
+      {
+        "key": "failed",
+        "label": "Failed",
+        "value": 2,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "errors",
+        "label": "Errors",
+        "value": 0,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "warnings",
+        "label": "Warnings",
+        "value": 0,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      }
+    ],
+    "guidance": [],
+    "extra": {
+      "label": "test session starts"
+    }
+  }
+}

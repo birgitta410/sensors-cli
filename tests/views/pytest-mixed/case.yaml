@@ -1,0 +1,22 @@
+# One golden-view case = one story about what a sensor situation looks like.
+#
+# This one: a pytest run with 10 passed / 2 failed, captured for real in input.txt.
+# The harness runs the real parser + real renderers and diffs against the approved
+# reading.json / human.txt / agent.txt beside this file.
+#
+# To add a case: make a new folder with a case.yaml + input file(s), then run
+#   SENSORS_APPROVE=1 uv run pytest tests/test_views.py
+# eyeball the three generated files, and commit them.
+
+now: "2026-07-10T12:00:00Z"          # frozen clock — makes "2s ago" deterministic
+lastUpdated: "2026-07-10T12:00:00Z"
+
+runners:
+  - name: tests
+    parser: pytest
+    mode: interval
+    interval: 10000
+    command: uv run pytest tests/ -v
+    input: input.txt
+    lastRun: "2026-07-10T11:59:58Z"   # -> "2s ago"
+    prompt: Fix failing tests before moving on.

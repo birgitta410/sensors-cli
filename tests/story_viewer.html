@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sensors Story Viewer</title>
+<style>
+/* ---- Reset / base ---- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+  font-size: 13px;
+  background: #0d1117;
+  color: #c9d1d9;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ---- Layout ---- */
+#header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+  flex-shrink: 0;
+}
+#header h1 { font-size: 1rem; color: #58a6ff; }
+#story-nav { display: flex; align-items: center; gap: 0.5rem; margin-left: auto; }
+#story-nav button {
+  background: #21262d;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 12px;
+}
+#story-nav button:hover { background: #30363d; }
+#story-label { color: #e6edf3; font-weight: bold; }
+#story-status { font-size: 12px; }
+
+#columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  flex: 1;
+  overflow: hidden;
+}
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow: hidden;
+}
+.column-header {
+  font-size: 11px;
+  font-weight: bold;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0 0.25rem 0.2rem;
+  border-bottom: 1px solid #30363d;
+  flex-shrink: 0;
+}
+
+/* ---- Panels ---- */
+.panel {
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+}
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+  flex-shrink: 0;
+}
+.panel-label { font-weight: bold; color: #e6edf3; }
+.panel-filename { color: #8b949e; }
+.panel-badge { margin-left: auto; font-size: 11px; }
+.badge-match { color: #3fb950; }
+.badge-differ { color: #f85149; }
+.badge-unapproved { color: #d29922; }
+
+.panel-body {
+  flex: 1;
+  overflow: auto;
+  padding: 0.5rem 0.75rem;
+  white-space: pre;
+  line-height: 1.5;
+  tab-size: 2;
+}
+/* non-pre body variant for the visual reading view */
+.panel-body.panel-body--visual {
+  white-space: normal;
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+}
+
+/* ---- Tab strip (reading.json panel) ---- */
+.tab-strip {
+  display: flex;
+  gap: 0;
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+  flex-shrink: 0;
+}
+.tab-btn {
+  padding: 0.25rem 0.75rem;
+  font-size: 11px;
+  font-family: inherit;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #8b949e;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+}
+.tab-btn:hover { color: #c9d1d9; }
+.tab-btn.active { color: #e6edf3; border-bottom-color: #58a6ff; }
+
+/* ---- Reading visual view ---- */
+.rv-runner {
+  border: 1px solid #30363d;
+  border-radius: 5px;
+  margin-bottom: 0.6rem;
+  overflow: hidden;
+}
+.rv-runner:last-child { margin-bottom: 0; }
+
+.rv-runner-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.6rem;
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+}
+.rv-runner-name { font-weight: bold; color: #e6edf3; }
+.rv-status-pill {
+  font-size: 10px;
+  font-weight: bold;
+  padding: 0.1rem 0.45rem;
+  border-radius: 99px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.rv-status-pill.success { background: #1b4d1b; color: #56d364; }
+.rv-status-pill.failure { background: #4d1b1b; color: #f85149; }
+.rv-summary { font-size: 12px; color: #c9d1d9; margin-left: auto; }
+
+.rv-body { padding: 0.5rem 0.6rem; display: flex; flex-direction: column; gap: 0.45rem; }
+
+.rv-row { display: flex; align-items: baseline; gap: 0.5rem; }
+.rv-row-label { font-size: 10px; color: #8b949e; text-transform: uppercase;
+                letter-spacing: 0.07em; width: 4.5rem; flex-shrink: 0; }
+
+/* Score */
+.rv-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 12px;
+}
+.rv-score-value { font-weight: bold; color: #e6edf3; }
+.rv-score-dir { font-size: 10px; color: #8b949e; }
+.rv-score-desc { color: #8b949e; font-size: 11px; }
+.rv-score-threshold { font-size: 10px; color: #d29922; }
+
+/* Metrics chips */
+.rv-metrics { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.rv-metric {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 4px;
+  padding: 0.1rem 0.45rem;
+  font-size: 11px;
+}
+.rv-metric-label { color: #8b949e; }
+.rv-metric-value { color: #e6edf3; font-weight: bold; }
+.rv-metric-unit { color: #8b949e; }
+.rv-metric.good .rv-metric-value { color: #56d364; }
+.rv-metric.bad  .rv-metric-value { color: #f85149; }
+
+/* Findings */
+.rv-findings { display: flex; flex-direction: column; gap: 0.3rem; }
+.rv-finding {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-left: 3px solid #f85149;
+  border-radius: 3px;
+  padding: 0.3rem 0.5rem;
+  font-size: 11px;
+}
+.rv-finding.warning { border-left-color: #d29922; }
+.rv-finding.info    { border-left-color: #58a6ff; }
+.rv-finding-loc { color: #8b949e; margin-bottom: 0.2rem; font-size: 10px; }
+.rv-finding-rule { display: inline-block; background: #21262d; border-radius: 3px;
+                   padding: 0 0.35rem; font-size: 10px; color: #d2a8ff; margin-right: 0.3rem; }
+.rv-finding-msg { color: #c9d1d9; white-space: pre-wrap; word-break: break-word; }
+
+/* Guidance */
+.rv-guidance { display: flex; flex-direction: column; gap: 0.25rem; }
+.rv-guidance-item { font-size: 11px; color: #8b949e; white-space: pre-wrap; }
+.rv-guidance-rule { font-weight: bold; color: #d2a8ff; }
+
+/* Extra */
+.rv-extra { font-size: 11px; color: #8b949e; }
+.rv-extra-kv { display: inline-block; margin-right: 0.75rem; }
+.rv-extra-key { color: #7ee787; }
+
+/* ---- Syntax highlighting (minimal, no library) ---- */
+/* YAML */
+.tok-key { color: #7ee787; }        /* keys */
+.tok-str { color: #a5d6ff; }        /* quoted strings */
+.tok-comment { color: #8b949e; }    /* # comments */
+.tok-num { color: #f2cc60; }        /* numbers */
+.tok-bool { color: #ff7b72; }       /* true/false/null */
+.tok-punct { color: #8b949e; }      /* : - */
+
+/* JSON */
+.json-key { color: #7ee787; }
+.json-str { color: #a5d6ff; }
+.json-num { color: #f2cc60; }
+.json-bool { color: #ff7b72; }
+.json-null { color: #ff7b72; }
+
+/* ---- ANSI colors ---- */
+.ansi-bold { font-weight: bold; }
+.ansi-dim { opacity: 0.6; }
+.ansi-italic { font-style: italic; }
+.ansi-underline { text-decoration: underline; }
+.ansi-reverse { filter: invert(1); }
+
+.ansi-black { color: #3d3d3d; }
+.ansi-red { color: #f85149; }
+.ansi-green { color: #3fb950; }
+.ansi-yellow { color: #d29922; }
+.ansi-blue { color: #58a6ff; }
+.ansi-magenta { color: #bc8cff; }
+.ansi-cyan { color: #39c5cf; }
+.ansi-white { color: #c9d1d9; }
+.ansi-bright-black { color: #6e7681; }
+.ansi-bright-red { color: #ff7b72; }
+.ansi-bright-green { color: #56d364; }
+.ansi-bright-yellow { color: #e3b341; }
+.ansi-bright-blue { color: #79c0ff; }
+.ansi-bright-magenta { color: #d2a8ff; }
+.ansi-bright-cyan { color: #76e3ea; }
+.ansi-bright-white { color: #f0f6fc; }
+
+.ansi-black-bg { background: #3d3d3d; }
+.ansi-red-bg { background: #4d1b1b; }
+.ansi-green-bg { background: #1b4d1b; }
+.ansi-yellow-bg { background: #4d3b1b; }
+.ansi-blue-bg { background: #1b2b4d; }
+.ansi-magenta-bg { background: #3b1b4d; }
+.ansi-cyan-bg { background: #1b3b4d; }
+.ansi-white-bg { background: #4d4d4d; }
+.ansi-bright-black-bg { background: #4d4d4d; }
+.ansi-bright-red-bg { background: #7b2929; }
+.ansi-bright-green-bg { background: #297b29; }
+.ansi-bright-yellow-bg { background: #7b5c29; }
+.ansi-bright-blue-bg { background: #29427b; }
+.ansi-bright-magenta-bg { background: #5c297b; }
+.ansi-bright-cyan-bg { background: #295c7b; }
+.ansi-bright-white-bg { background: #7b7b7b; }
+
+/* 256-colour palette — a representative subset; full palette generated by JS */
+
+/* ---- Footer ---- */
+#footer {
+  padding: 0.3rem 1rem;
+  background: #161b22;
+  border-top: 1px solid #30363d;
+  color: #8b949e;
+  font-size: 11px;
+  display: flex;
+  gap: 1.5rem;
+  flex-shrink: 0;
+}
+#footer kbd {
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 3px;
+  padding: 0 0.3rem;
+  color: #c9d1d9;
+}
+</style>
+</head>
+<body>
+
+<div id="header">
+  <h1>Sensors Story Viewer</h1>
+  <div id="story-nav">
+    <button id="btn-prev" title="Previous story (←/p)">&larr;</button>
+    <span id="story-label"></span>
+    <button id="btn-next" title="Next story (→/n)">&rarr;</button>
+  </div>
+  <span id="story-status"></span>
+</div>
+
+<div id="columns">
+  <div class="column" id="col-inputs">
+    <div class="column-header">Inputs</div>
+    <!-- panels injected here -->
+  </div>
+  <div class="column" id="col-outputs">
+    <div class="column-header">Outputs</div>
+    <!-- panels injected here -->
+  </div>
+</div>
+
+<div id="footer">
+  <span><kbd>←</kbd>/<kbd>→</kbd> or <kbd>p</kbd>/<kbd>n</kbd> — switch story</span>
+  <span><kbd>r</kbd> — regenerate (re-run script, re-open)</span>
+</div>
+
+<script>
+// ---- Embedded story data (injected by Python) ----
+const STORIES = [{"name": "pytest-mixed", "cells": [{"cid": "case.yaml", "label": "spec", "filename": "case.yaml", "content": "# One golden-view case = one story about what a sensor situation looks like.\n#\n# This one: a pytest run with 10 passed / 2 failed, captured for real in input.txt.\n# The harness runs the real parser + real renderers and diffs against the approved\n# reading.json / human.txt / agent.txt beside this file.\n#\n# To add a case: make a new folder with a case.yaml + input file(s), then run\n#   SENSORS_APPROVE=1 uv run pytest tests/test_views.py\n# eyeball the three generated files, and commit them.\n\nnow: \"2026-07-10T12:00:00Z\"          # frozen clock — makes \"2s ago\" deterministic\nlastUpdated: \"2026-07-10T12:00:00Z\"\n\nrunners:\n  - name: tests\n    parser: pytest\n    mode: interval\n    interval: 10000\n    command: uv run pytest tests/ -v\n    input: input.txt\n    lastRun: \"2026-07-10T11:59:58Z\"   # -> \"2s ago\"\n    prompt: Fix failing tests before moving on.\n", "kind": "yaml", "side": "input", "status": null, "htmlContent": null}, {"cid": "input.txt", "label": "captured tool output", "filename": "input.txt", "content": "============================= test session starts ==============================\nplatform linux -- Python 3.11.7, pytest-7.4.3, pluggy-1.3.0\nrootdir: /workspace/project\ncollected 12 items\n\ntests/test_calculator.py::test_add PASSED                                [ 8%]\ntests/test_calculator.py::test_subtract PASSED                           [16%]\ntests/test_calculator.py::test_multiply PASSED                           [25%]\ntests/test_calculator.py::test_divide PASSED                             [33%]\ntests/test_calculator.py::test_divide_by_zero FAILED                     [41%]\ntests/test_utils.py::test_format_number PASSED                           [50%]\ntests/test_utils.py::test_parse_input FAILED                             [58%]\ntests/test_utils.py::test_validate_range PASSED                          [66%]\ntests/test_api.py::test_get_user PASSED                                  [75%]\ntests/test_api.py::test_create_user PASSED                               [83%]\ntests/test_api.py::test_update_user PASSED                               [91%]\ntests/test_api.py::test_delete_user PASSED                               [100%]\n\n=================================== FAILURES ===================================\n__________________________ test_divide_by_zero _________________________________\n\n    def test_divide_by_zero():\n        calculator = Calculator()\n>       result = calculator.divide(10, 0)\nE       ZeroDivisionError: division by zero\n\ntests/test_calculator.py:23: ZeroDivisionError\n______________________________ test_parse_input ________________________________\n\n    def test_parse_input():\n        result = parse_input(\"not a number\")\n>       assert result == 0\nE       AssertionError: assert None == 0\n\ntests/test_utils.py:15: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_calculator.py::test_divide_by_zero - ZeroDivisionError: division by zero\nFAILED tests/test_utils.py::test_parse_input - AssertionError: assert None == 0\n========================= 10 passed, 2 failed in 0.45s =========================\n", "kind": "text", "side": "input", "status": null, "htmlContent": null}, {"cid": "reading.json", "label": "normalized reading", "filename": "reading.json", "content": "{\n  \"tests\": {\n    \"success\": false,\n    \"summary\": \"2 failed, 10 passed\",\n    \"score\": {\n      \"value\": 2,\n      \"direction\": \"less\",\n      \"description\": \"Number of failing tests and errors\",\n      \"threshold\": null\n    },\n    \"findings\": [\n      {\n        \"message\": \"def test_divide_by_zero():\\n        calculator = Calculator()\\n>       result = calculator.divide(10, 0)\\nE       ZeroDivisionError: division by zero\\n\\ntests/test_calculator.py:23: ZeroDivisionError\",\n        \"severity\": \"error\",\n        \"file\": \"test_divide_by_zero\",\n        \"line\": null,\n        \"column\": null,\n        \"rule\": \"test_failure\",\n        \"context\": null\n      },\n      {\n        \"message\": \"def test_parse_input():\\n        result = parse_input(\\\"not a number\\\")\\n>       assert result == 0\\nE       AssertionError: assert None == 0\\n\\ntests/test_utils.py:15: AssertionError\",\n        \"severity\": \"error\",\n        \"file\": \"test_parse_input\",\n        \"line\": null,\n        \"column\": null,\n        \"rule\": \"test_failure\",\n        \"context\": null\n      }\n    ],\n    \"metrics\": [\n      {\n        \"key\": \"passed\",\n        \"label\": \"Passed\",\n        \"value\": 10,\n        \"unit\": null,\n        \"direction\": \"more\",\n        \"threshold\": null\n      },\n      {\n        \"key\": \"failed\",\n        \"label\": \"Failed\",\n        \"value\": 2,\n        \"unit\": null,\n        \"direction\": \"less\",\n        \"threshold\": null\n      },\n      {\n        \"key\": \"errors\",\n        \"label\": \"Errors\",\n        \"value\": 0,\n        \"unit\": null,\n        \"direction\": \"less\",\n        \"threshold\": null\n      },\n      {\n        \"key\": \"warnings\",\n        \"label\": \"Warnings\",\n        \"value\": 0,\n        \"unit\": null,\n        \"direction\": \"less\",\n        \"threshold\": null\n      }\n    ],\n    \"guidance\": [],\n    \"extra\": {\n      \"label\": \"test session starts\"\n    }\n  }\n}\n", "kind": "reading", "side": "output", "status": "match", "readingData": {"tests": {"success": false, "summary": "2 failed, 10 passed", "score": {"value": 2, "direction": "less", "description": "Number of failing tests and errors", "threshold": null}, "findings": [{"message": "def test_divide_by_zero():\n        calculator = Calculator()\n>       result = calculator.divide(10, 0)\nE       ZeroDivisionError: division by zero\n\ntests/test_calculator.py:23: ZeroDivisionError", "severity": "error", "file": "test_divide_by_zero", "line": null, "column": null, "rule": "test_failure", "context": null}, {"message": "def test_parse_input():\n        result = parse_input(\"not a number\")\n>       assert result == 0\nE       AssertionError: assert None == 0\n\ntests/test_utils.py:15: AssertionError", "severity": "error", "file": "test_parse_input", "line": null, "column": null, "rule": "test_failure", "context": null}], "metrics": [{"key": "passed", "label": "Passed", "value": 10, "unit": null, "direction": "more", "threshold": null}, {"key": "failed", "label": "Failed", "value": 2, "unit": null, "direction": "less", "threshold": null}, {"key": "errors", "label": "Errors", "value": 0, "unit": null, "direction": "less", "threshold": null}, {"key": "warnings", "label": "Warnings", "value": 0, "unit": null, "direction": "less", "threshold": null}], "guidance": [], "extra": {"label": "test session starts"}}}, "htmlContent": null}, {"cid": "human.txt", "label": "human view", "filename": "human.txt", "content": "\u001b[3m                                   \u001b[0m\u001b[1;3mSensors Status\u001b[0m\u001b[3m                                    \u001b[0m\n┏━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┓\n┃\u001b[1;36m \u001b[0m\u001b[1;36m  #\u001b[0m\u001b[1;36m \u001b[0m┃\u001b[1;36m \u001b[0m\u001b[1;36mSensor      \u001b[0m\u001b[1;36m \u001b[0m┃\u001b[1;36m \u001b[0m\u001b[1;36mWhen   \u001b[0m\u001b[1;36m \u001b[0m┃\u001b[1;36m \u001b[0m\u001b[1;36mSt \u001b[0m\u001b[1;36m \u001b[0m┃\u001b[1;36m \u001b[0m\u001b[1;36mTrend \u001b[0m\u001b[1;36m \u001b[0m┃\u001b[1;36m \u001b[0m\u001b[1;36mLast Run    \u001b[0m\u001b[1;36m \u001b[0m┃\u001b[1;36m \u001b[0m\u001b[1;36mDetails             \u001b[0m\u001b[1;36m \u001b[0m┃\n┡━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━┩\n│   1 │\u001b[37m \u001b[0m\u001b[37mtests       \u001b[0m\u001b[37m \u001b[0m│ \u001b[2m10s\u001b[0m     │ 🔴  │   ➖   │ 2s ago       │ \u001b[31m2 failed, 10 passed\u001b[0m  │\n└─────┴──────────────┴─────────┴─────┴────────┴──────────────┴──────────────────────┘\n", "kind": "ansi", "side": "output", "status": "match", "htmlContent": "<span class=\"ansi-italic\">                                   </span><span class=\"ansi-bold ansi-italic\">Sensors Status</span><span class=\"ansi-italic\">                                    </span>\n┏━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┓\n┃<span class=\"ansi-cyan\"> </span><span class=\"ansi-cyan\">  #</span><span class=\"ansi-cyan\"> </span>┃<span class=\"ansi-cyan\"> </span><span class=\"ansi-cyan\">Sensor      </span><span class=\"ansi-cyan\"> </span>┃<span class=\"ansi-cyan\"> </span><span class=\"ansi-cyan\">When   </span><span class=\"ansi-cyan\"> </span>┃<span class=\"ansi-cyan\"> </span><span class=\"ansi-cyan\">St </span><span class=\"ansi-cyan\"> </span>┃<span class=\"ansi-cyan\"> </span><span class=\"ansi-cyan\">Trend </span><span class=\"ansi-cyan\"> </span>┃<span class=\"ansi-cyan\"> </span><span class=\"ansi-cyan\">Last Run    </span><span class=\"ansi-cyan\"> </span>┃<span class=\"ansi-cyan\"> </span><span class=\"ansi-cyan\">Details             </span><span class=\"ansi-cyan\"> </span>┃\n┡━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━┩\n│   1 │<span class=\"ansi-white\"> </span><span class=\"ansi-white\">tests       </span><span class=\"ansi-white\"> </span>│ <span class=\"ansi-dim\">10s</span>     │ 🔴  │   ➖   │ 2s ago       │ <span class=\"ansi-red\">2 failed, 10 passed</span>  │\n└─────┴──────────────┴─────────┴─────┴────────┴──────────────┴──────────────────────┘\n"}, {"cid": "agent.txt", "label": "agent view", "filename": "agent.txt", "content": "SENSORS STATUS\nUpdated: 2026-07-10T12:00:00Z (0s ago)\n\ntests: FAILURE (2 failed, 10 passed) [ran 2s ago]\n  cmd: `uv run pytest tests/ -v`, score: Number of failing tests and errors (lower is better)\n  prompt: Fix failing tests before moving on.\n  test_divide_by_zero test_failure def test_divide_by_zero():\n        calculator = Calculator()\n>       result = calculator.divide(10, 0)\nE       ZeroDivisionError: division by zero\n\ntests/test_calculator.py:23: ZeroDivisionError\n  test_parse_input test_failure def test_parse_input():\n        result = parse_input(\"not a number\")\n>       assert result == 0\nE       AssertionError: assert None == 0\n\ntests/test_utils.py:15: AssertionError\n\n", "kind": "text", "side": "output", "status": "match", "htmlContent": null}], "allMatch": true}];
+
+// ---- 256-colour ANSI palette ----
+(function() {
+  const el = document.createElement('style');
+  // The first 16 are already defined in CSS. We only auto-generate 16-255.
+  const CUBE = [0, 95, 135, 175, 215, 255];
+  const GREY = (n) => 8 + 10 * n;
+  const rgb = (r, g, b) => `rgb(${r},${g},${b})`;
+  const lines = [];
+  for (let i = 16; i <= 231; i++) {
+    const idx = i - 16;
+    const b = CUBE[idx % 6], g = CUBE[Math.floor(idx / 6) % 6], r = CUBE[Math.floor(idx / 36)];
+    lines.push(`.ansi-256-${i}{color:${rgb(r,g,b)}}`);
+    lines.push(`.ansi-256-${i}-bg{background:${rgb(r,g,b)}}`);
+  }
+  for (let i = 232; i <= 255; i++) {
+    const v = GREY(i - 232);
+    lines.push(`.ansi-256-${i}{color:${rgb(v,v,v)}}`);
+    lines.push(`.ansi-256-${i}-bg{background:${rgb(v,v,v)}}`);
+  }
+  el.textContent = lines.join('\n');
+  document.head.appendChild(el);
+})();
+
+// ---- Syntax highlighting ----
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function highlightYaml(raw) {
+  // Line-by-line: detect comments, key: val pairs, bare scalars
+  return raw.split('\n').map(line => {
+    // Comment line
+    const commentMatch = line.match(/^(\s*)(#.*)$/);
+    if (commentMatch) {
+      return escHtml(commentMatch[1]) + `<span class="tok-comment">${escHtml(commentMatch[2])}</span>`;
+    }
+    // Key: value
+    const kvMatch = line.match(/^(\s*)([-\w .]+)(:\s*)(.*)?$/);
+    if (kvMatch) {
+      const indent = escHtml(kvMatch[1]);
+      const key = `<span class="tok-key">${escHtml(kvMatch[2])}</span>`;
+      const colon = `<span class="tok-punct">${escHtml(kvMatch[3])}</span>`;
+      const val = kvMatch[4] !== undefined ? highlightYamlValue(kvMatch[4]) : '';
+      return indent + key + colon + val;
+    }
+    // List item prefix
+    const listMatch = line.match(/^(\s*)(- )(.*)?$/);
+    if (listMatch) {
+      const indent = escHtml(listMatch[1]);
+      const dash = `<span class="tok-punct">- </span>`;
+      const val = listMatch[3] !== undefined ? highlightYamlValue(listMatch[3]) : '';
+      return indent + dash + val;
+    }
+    return escHtml(line);
+  }).join('\n');
+}
+
+function highlightYamlValue(v) {
+  if (!v) return '';
+  if (/^#/.test(v)) return `<span class="tok-comment">${escHtml(v)}</span>`;
+  if (/^["']/.test(v)) return `<span class="tok-str">${escHtml(v)}</span>`;
+  if (/^(true|false|null|~)$/i.test(v)) return `<span class="tok-bool">${escHtml(v)}</span>`;
+  if (/^-?[0-9]/.test(v)) return `<span class="tok-num">${escHtml(v)}</span>`;
+  return escHtml(v);
+}
+
+function highlightJson(raw) {
+  // Simple token-by-token JSON highlighter
+  return raw.replace(
+    /("(?:\\.|[^"\\])*")\s*:|("(?:\\.|[^"\\])*")|(\btrue\b|\bfalse\b|\bnull\b)|(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g,
+    (_, key, str, bool, num) => {
+      if (key !== undefined) return `<span class="json-key">${escHtml(key)}</span>:`;
+      if (str !== undefined) return `<span class="json-str">${escHtml(str)}</span>`;
+      if (bool !== undefined) return `<span class="json-bool">${escHtml(bool)}</span>`;
+      if (num !== undefined) return `<span class="json-num">${escHtml(num)}</span>`;
+      return _;
+    }
+  );
+}
+
+// ---- ANSI → HTML (pre-converted in Python and embedded; this is a passthrough) ----
+// The Python side converted ANSI escape codes in the "ansi" cells to HTML spans.
+// So for "ansi" kind cells the content is already HTML; we just inject it directly.
+
+// ---- Reading visual view ----
+function metricGoodness(metric) {
+  // Returns 'good', 'bad', or '' based on value vs direction.
+  // Without a threshold we just use direction and whether value is 0.
+  if (metric.direction === 'less') return metric.value === 0 ? 'good' : 'bad';
+  if (metric.direction === 'more') return metric.value > 0 ? 'good' : 'bad';
+  return '';
+}
+
+function renderReadingVisual(data) {
+  // data: { runnerName: { success, summary, score, findings, metrics, guidance, extra }, … }
+  const wrap = document.createElement('div');
+  wrap.className = 'panel-body panel-body--visual';
+
+  for (const [name, r] of Object.entries(data)) {
+    const card = document.createElement('div');
+    card.className = 'rv-runner';
+
+    // ---- header row ----
+    const head = document.createElement('div');
+    head.className = 'rv-runner-head';
+    const statusClass = r.success ? 'success' : 'failure';
+    const statusText  = r.success ? 'pass' : 'fail';
+    head.innerHTML =
+      `<span class="rv-runner-name">${escHtml(name)}</span>` +
+      `<span class="rv-status-pill ${statusClass}">${statusText}</span>` +
+      (r.summary ? `<span class="rv-summary">${escHtml(r.summary)}</span>` : '');
+    card.appendChild(head);
+
+    const body = document.createElement('div');
+    body.className = 'rv-body';
+
+    // ---- score ----
+    if (r.score) {
+      const s = r.score;
+      const dirSymbol = s.direction === 'less' ? '↓ less is better' : '↑ more is better';
+      let scoreHtml =
+        `<span class="rv-score-value">${escHtml(String(s.value))}</span>` +
+        `<span class="rv-score-dir">${escHtml(dirSymbol)}</span>`;
+      if (s.description)
+        scoreHtml += `<span class="rv-score-desc">— ${escHtml(s.description)}</span>`;
+      if (s.threshold != null)
+        scoreHtml += `<span class="rv-score-threshold">threshold: ${escHtml(String(s.threshold))}</span>`;
+      body.innerHTML +=
+        `<div class="rv-row"><span class="rv-row-label">score</span>` +
+        `<span class="rv-score">${scoreHtml}</span></div>`;
+    }
+
+    // ---- metrics ----
+    if (r.metrics && r.metrics.length > 0) {
+      const chips = r.metrics.map(m => {
+        const g = metricGoodness(m);
+        const val = m.unit ? `${m.value}${m.unit}` : String(m.value);
+        return `<span class="rv-metric ${g}">` +
+          `<span class="rv-metric-label">${escHtml(m.label)}</span>` +
+          `<span class="rv-metric-value">${escHtml(val)}</span>` +
+          `</span>`;
+      }).join('');
+      body.innerHTML +=
+        `<div class="rv-row"><span class="rv-row-label">metrics</span>` +
+        `<span class="rv-metrics">${chips}</span></div>`;
+    }
+
+    // ---- findings ----
+    if (r.findings && r.findings.length > 0) {
+      let findingsHtml = '<div class="rv-findings">';
+      for (const f of r.findings) {
+        const sev = f.severity || 'error';
+        let loc = '';
+        if (f.file) loc += escHtml(f.file);
+        if (f.line != null) loc += `:${f.line}`;
+        if (f.column != null) loc += `:${f.column}`;
+        findingsHtml +=
+          `<div class="rv-finding ${sev}">` +
+          (loc || f.rule
+            ? `<div class="rv-finding-loc">` +
+              (f.rule ? `<span class="rv-finding-rule">${escHtml(f.rule)}</span>` : '') +
+              (loc    ? escHtml(loc) : '') +
+              `</div>`
+            : '') +
+          `<div class="rv-finding-msg">${escHtml(f.message)}</div>` +
+          `</div>`;
+      }
+      findingsHtml += '</div>';
+      body.innerHTML +=
+        `<div class="rv-row"><span class="rv-row-label">findings</span>` +
+        `<div style="flex:1">${findingsHtml}</div></div>`;
+    }
+
+    // ---- guidance ----
+    if (r.guidance && r.guidance.length > 0) {
+      let gHtml = '<div class="rv-guidance">';
+      for (const g of r.guidance) {
+        gHtml +=
+          `<div class="rv-guidance-item">` +
+          (g.rule ? `<span class="rv-guidance-rule">${escHtml(g.rule)}: </span>` : '') +
+          escHtml(g.body || '') +
+          `</div>`;
+      }
+      gHtml += '</div>';
+      body.innerHTML +=
+        `<div class="rv-row"><span class="rv-row-label">guidance</span>` +
+        `<div style="flex:1">${gHtml}</div></div>`;
+    }
+
+    // ---- extra ----
+    if (r.extra && Object.keys(r.extra).length > 0) {
+      const kvs = Object.entries(r.extra)
+        .map(([k, v]) =>
+          `<span class="rv-extra-kv"><span class="rv-extra-key">${escHtml(k)}</span>: ${escHtml(String(v))}</span>`)
+        .join('');
+      body.innerHTML +=
+        `<div class="rv-row"><span class="rv-row-label">extra</span>` +
+        `<span class="rv-extra">${kvs}</span></div>`;
+    }
+
+    card.appendChild(body);
+    wrap.appendChild(card);
+  }
+
+  return wrap;
+}
+
+// ---- Render ----
+function renderPanel(cell) {
+  const div = document.createElement('div');
+  div.className = 'panel';
+
+  // Header
+  const hdr = document.createElement('div');
+  hdr.className = 'panel-header';
+  hdr.innerHTML = `<span class="panel-label">${escHtml(cell.label)}</span>` +
+    `<span class="panel-filename">${escHtml(cell.filename)}</span>`;
+  if (cell.status) {
+    const cls = {match:'badge-match', differ:'badge-differ', unapproved:'badge-unapproved'}[cell.status];
+    const icon = {match:'✓ approved', differ:'✗ differs', unapproved:'⚠ not approved'}[cell.status];
+    hdr.innerHTML += `<span class="panel-badge ${cls}">${icon}</span>`;
+  }
+  div.appendChild(hdr);
+
+  // ---- Reading panel: tab strip + two panes ----
+  if (cell.kind === 'reading') {
+    const strip = document.createElement('div');
+    strip.className = 'tab-strip';
+    strip.innerHTML =
+      `<button class="tab-btn active" data-tab="visual">Visual</button>` +
+      `<button class="tab-btn"        data-tab="json">JSON</button>`;
+    div.appendChild(strip);
+
+    const visualPane = renderReadingVisual(cell.readingData);
+    visualPane.dataset.pane = 'visual';
+
+    const jsonPane = document.createElement('div');
+    jsonPane.className = 'panel-body';
+    jsonPane.dataset.pane = 'json';
+    jsonPane.innerHTML = highlightJson(escHtml(cell.content));
+    jsonPane.style.display = 'none';
+
+    div.appendChild(visualPane);
+    div.appendChild(jsonPane);
+
+    strip.addEventListener('click', e => {
+      const btn = e.target.closest('.tab-btn');
+      if (!btn) return;
+      const tab = btn.dataset.tab;
+      strip.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+      visualPane.style.display = tab === 'visual' ? '' : 'none';
+      jsonPane.style.display   = tab === 'json'   ? '' : 'none';
+    });
+
+    return div;
+  }
+
+  // ---- All other panels ----
+  const body = document.createElement('div');
+  body.className = 'panel-body';
+
+  let html;
+  if (cell.kind === 'ansi') {
+    html = cell.htmlContent;
+  } else if (cell.kind === 'yaml') {
+    html = highlightYaml(cell.content);
+  } else if (cell.kind === 'json') {
+    html = highlightJson(escHtml(cell.content));
+  } else {
+    html = escHtml(cell.content);
+  }
+  body.innerHTML = html;
+  div.appendChild(body);
+
+  return div;
+}
+
+function showStory(idx) {
+  const story = STORIES[idx];
+
+  document.getElementById('story-label').textContent =
+    `${idx + 1} / ${STORIES.length}  ${story.name}`;
+
+  const statusEl = document.getElementById('story-status');
+  if (story.allMatch) {
+    statusEl.innerHTML = '<span style="color:#3fb950">✓ all match</span>';
+  } else {
+    statusEl.innerHTML = '<span style="color:#f85149">✗ drift</span>';
+  }
+
+  const colIn = document.getElementById('col-inputs');
+  const colOut = document.getElementById('col-outputs');
+
+  // Clear previous panels (keep the column-header div)
+  Array.from(colIn.querySelectorAll('.panel')).forEach(p => p.remove());
+  Array.from(colOut.querySelectorAll('.panel')).forEach(p => p.remove());
+
+  for (const cell of story.cells) {
+    const panel = renderPanel(cell);
+    if (cell.side === 'input') {
+      colIn.appendChild(panel);
+    } else {
+      colOut.appendChild(panel);
+    }
+  }
+}
+
+let currentIdx = 0;
+
+function navigate(delta) {
+  currentIdx = (currentIdx + delta + STORIES.length) % STORIES.length;
+  showStory(currentIdx);
+}
+
+document.getElementById('btn-prev').addEventListener('click', () => navigate(-1));
+document.getElementById('btn-next').addEventListener('click', () => navigate(1));
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'n') navigate(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'p') navigate(-1);
+});
+
+// Initial render
+if (STORIES.length > 0) {
+  showStory(0);
+} else {
+  document.getElementById('col-inputs').innerHTML +=
+    '<p style="color:#8b949e;padding:1rem">No stories found under tests/views/.</p>';
+}
+</script>
+</body>
+</html>

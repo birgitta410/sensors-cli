@@ -1,0 +1,19 @@
+SENSORS STATUS
+Updated: 2026-07-10T12:00:00Z (0s ago)
+
+tests: FAILURE (2 failed, 10 passed) [ran 2s ago]
+  cmd: `uv run pytest tests/ -v`, score: Number of failing tests and errors (lower is better)
+  prompt: Fix failing tests before moving on.
+  test_divide_by_zero test_failure def test_divide_by_zero():
+        calculator = Calculator()
+>       result = calculator.divide(10, 0)
+E       ZeroDivisionError: division by zero
+
+tests/test_calculator.py:23: ZeroDivisionError
+  test_parse_input test_failure def test_parse_input():
+        result = parse_input("not a number")
+>       assert result == 0
+E       AssertionError: assert None == 0
+
+tests/test_utils.py:15: AssertionError
+

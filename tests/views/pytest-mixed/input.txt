@@ -1,0 +1,39 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.7, pytest-7.4.3, pluggy-1.3.0
+rootdir: /workspace/project
+collected 12 items
+
+tests/test_calculator.py::test_add PASSED                                [ 8%]
+tests/test_calculator.py::test_subtract PASSED                           [16%]
+tests/test_calculator.py::test_multiply PASSED                           [25%]
+tests/test_calculator.py::test_divide PASSED                             [33%]
+tests/test_calculator.py::test_divide_by_zero FAILED                     [41%]
+tests/test_utils.py::test_format_number PASSED                           [50%]
+tests/test_utils.py::test_parse_input FAILED                             [58%]
+tests/test_utils.py::test_validate_range PASSED                          [66%]
+tests/test_api.py::test_get_user PASSED                                  [75%]
+tests/test_api.py::test_create_user PASSED                               [83%]
+tests/test_api.py::test_update_user PASSED                               [91%]
+tests/test_api.py::test_delete_user PASSED                               [100%]
+
+=================================== FAILURES ===================================
+__________________________ test_divide_by_zero _________________________________
+
+    def test_divide_by_zero():
+        calculator = Calculator()
+>       result = calculator.divide(10, 0)
+E       ZeroDivisionError: division by zero
+
+tests/test_calculator.py:23: ZeroDivisionError
+______________________________ test_parse_input ________________________________
+
+    def test_parse_input():
+        result = parse_input("not a number")
+>       assert result == 0
+E       AssertionError: assert None == 0
+
+tests/test_utils.py:15: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_calculator.py::test_divide_by_zero - ZeroDivisionError: division by zero
+FAILED tests/test_utils.py::test_parse_input - AssertionError: assert None == 0
+========================= 10 passed, 2 failed in 0.45s =========================

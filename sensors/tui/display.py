@@ -49,6 +49,7 @@ class DisplayManager:
         on_clear: Callable[[], Awaitable[None]] | None = None,
         on_rerun: Callable[[str], Awaitable[None]] | None = None,
         on_shutdown: Callable[[], Awaitable[None]] | None = None,
+        clock: Callable[[], datetime] | None = None,
     ):
         """Initialize the display manager.
 
@@ -63,9 +64,15 @@ class DisplayManager:
             on_clear: Async callback for C key in attach mode.
             on_rerun: Async callback for digit keys in attach mode; receives runner name.
             on_shutdown: Async callback for Q key in attach mode.
+            clock: Injectable "now" provider used for relative-time rendering ("2s ago").
+                Defaults to the real UTC clock; golden-view tests inject a fixed clock so
+                the rendered table is byte-deterministic.
         """
+        from sensors.time_util import utc_now
+
         self.state_manager = state_manager
         self.update_interval = update_interval
+        self._clock: Callable[[], datetime] = clock or utc_now
         self.console = Console()
         self._should_stop = False
         self._snapshot_status: str | None = None
@@ -139,9 +146,12 @@ class DisplayManager:
 
     def _format_time_ago(self, timestamp: datetime) -> str:
         """Format a timestamp as 'X seconds/minutes ago'."""
-        now = datetime.now().replace(tzinfo=timestamp.tzinfo)
-        delta = now - timestamp
-        seconds = int(delta.total_seconds())
+        # Compare via POSIX timestamps so naive local state times and aware UTC clock
+        # values are handled consistently. The clock is injected (see __init__) so the
+        # human view is deterministic under a frozen clock in golden tests.
+        seconds = int(self._clock().timestamp() - timestamp.timestamp())
+        if seconds < 0:
+            seconds = 0
 
         if seconds < 60:
             return f"{seconds}s ago"
