@@ -1,0 +1,9 @@
+SENSORS STATUS
+Updated: 2026-07-14T10:00:00Z (0s ago)
+
+lint: FAILURE (3 issues) [ran 2s ago]
+  cmd: `ruff check src --output-format json`, score: Number of ruff lint issues (lower is better)
+  src/api/handlers.py:14:89 E501 Line too long (92 > 88 characters)
+  src/utils/files.py:3:1 F401 'os.path' imported but unused
+  src/models/user.py:22:24 B006 Do not use mutable data structures for argument defaults
+

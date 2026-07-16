@@ -1,0 +1,11 @@
+now: "2026-07-14T10:00:00Z"
+lastUpdated: "2026-07-14T10:00:00Z"
+
+runners:
+  - name: security
+    parser: semgrep
+    mode: interval
+    interval: 60000
+    command: semgrep --config p/python --json src/
+    input: input.json
+    lastRun: "2026-07-14T09:58:00Z"

@@ -1,0 +1,53 @@
+{
+  "lint": {
+    "success": false,
+    "summary": "3 issues",
+    "score": {
+      "value": 3,
+      "direction": "less",
+      "description": "Number of ruff lint issues",
+      "threshold": null
+    },
+    "findings": [
+      {
+        "message": "Line too long (92 > 88 characters)",
+        "severity": "error",
+        "file": "src/api/handlers.py",
+        "line": 14,
+        "column": 89,
+        "rule": "E501",
+        "context": null
+      },
+      {
+        "message": "'os.path' imported but unused",
+        "severity": "error",
+        "file": "src/utils/files.py",
+        "line": 3,
+        "column": 1,
+        "rule": "F401",
+        "context": null
+      },
+      {
+        "message": "Do not use mutable data structures for argument defaults",
+        "severity": "error",
+        "file": "src/models/user.py",
+        "line": 22,
+        "column": 24,
+        "rule": "B006",
+        "context": null
+      }
+    ],
+    "metrics": [
+      {
+        "key": "errorCount",
+        "label": "Errors",
+        "value": 3,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      }
+    ],
+    "guidance": [],
+    "extra": {}
+  }
+}

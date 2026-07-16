@@ -1,0 +1,65 @@
+# Multi-sensor overview story: 4 runners, mixed pass/fail, with a snapshot so
+# the agent view shows trend deltas (Better/Worse than snapshot).
+#
+# Runners
+#   lint      eslint   PASS  — 0 issues now, was 3 in snapshot  → Better (-3)
+#   tests     pytest   FAIL  — 2 failing now, was 0 in snapshot → Worse  (+2)
+#   coverage  pytest_cov PASS — 90% coverage (no snapshot entry, no delta)
+#   types     tsc      FAIL  — 3 errors now, was 1 in snapshot  → Worse  (+2)
+
+now: "2026-07-14T11:00:00Z"
+lastUpdated: "2026-07-14T11:00:00Z"
+
+runners:
+  - name: lint
+    parser: eslint
+    mode: interval
+    interval: 15000
+    command: eslint src --format json
+    input: lint-pass.json
+    lastRun: "2026-07-14T10:59:55Z"
+    prompt: Keep lint clean before merging.
+
+  - name: tests
+    parser: pytest
+    mode: interval
+    interval: 20000
+    command: uv run pytest tests/ -v
+    input: tests-fail.txt
+    lastRun: "2026-07-14T10:59:50Z"
+    prompt: Fix failing tests before moving on.
+
+  - name: coverage
+    parser: pytest_cov
+    mode: interval
+    interval: 20000
+    command: uv run pytest --cov=src --cov-report=term-missing
+    input: coverage-pass.txt
+    lastRun: "2026-07-14T10:59:50Z"
+
+  - name: types
+    parser: tsc
+    mode: interval
+    interval: 15000
+    command: tsc --noEmit
+    input: types-fail.txt
+    lastRun: "2026-07-14T10:59:56Z"
+
+snapshot:
+  id: "before-refactor"
+  timestamp: "2026-07-14T09:00:00Z"
+  runners:
+    - name: lint
+      parser: eslint
+      input: snap-lint.json
+      lastRun: "2026-07-14T08:59:55Z"
+
+    - name: tests
+      parser: pytest
+      input: snap-tests.txt
+      lastRun: "2026-07-14T08:59:50Z"
+
+    - name: types
+      parser: tsc
+      input: snap-types.txt
+      lastRun: "2026-07-14T08:59:56Z"

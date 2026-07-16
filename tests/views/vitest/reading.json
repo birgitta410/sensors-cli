@@ -1,0 +1,43 @@
+{
+  "tests": {
+    "success": false,
+    "summary": "1 failed, 13 passed",
+    "score": {
+      "value": 1,
+      "direction": "less",
+      "description": "Number of failing tests",
+      "threshold": null
+    },
+    "findings": [
+      {
+        "message": "AssertionError: expected 'Submit' to equal 'Click me'\n ❯ src/components/Button.test.tsx:18:34\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯",
+        "severity": "error",
+        "file": "src/components/Button.test.tsx",
+        "line": null,
+        "column": null,
+        "rule": "test_failure",
+        "context": "src/components/Button.test.tsx > Button > renders with correct label"
+      }
+    ],
+    "metrics": [
+      {
+        "key": "passed",
+        "label": "Passed",
+        "value": 13,
+        "unit": null,
+        "direction": "more",
+        "threshold": null
+      },
+      {
+        "key": "failed",
+        "label": "Failed",
+        "value": 1,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      }
+    ],
+    "guidance": [],
+    "extra": {}
+  }
+}

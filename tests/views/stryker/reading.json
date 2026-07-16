@@ -1,0 +1,81 @@
+{
+  "mutation": {
+    "success": true,
+    "summary": "77.78% of covered (70.00% of total, 2 survived, 7/10 valid)",
+    "score": {
+      "value": 78,
+      "direction": "more",
+      "description": "Mutation score (% of covered)",
+      "threshold": null
+    },
+    "findings": [],
+    "metrics": [
+      {
+        "key": "mutationScoreOfCovered",
+        "label": "Mutation score (covered)",
+        "value": 77.78,
+        "unit": "%",
+        "direction": "more",
+        "threshold": 80.0
+      },
+      {
+        "key": "mutationScoreOfTotal",
+        "label": "Mutation score (total)",
+        "value": 70.0,
+        "unit": "%",
+        "direction": "more",
+        "threshold": null
+      },
+      {
+        "key": "killed",
+        "label": "Killed",
+        "value": 6,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "survived",
+        "label": "Survived",
+        "value": 2,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "noCoverage",
+        "label": "No coverage",
+        "value": 1,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "detected",
+        "label": "Detected",
+        "value": 7,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "valid",
+        "label": "Valid",
+        "value": 10,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "covered",
+        "label": "Covered",
+        "value": 9,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      }
+    ],
+    "guidance": [],
+    "extra": {}
+  }
+}

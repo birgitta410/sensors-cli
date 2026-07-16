@@ -1,0 +1,9 @@
+SENSORS STATUS
+Updated: 2026-07-14T10:00:00Z (0s ago)
+
+types: FAILURE (3 errors in 2 files) [ran 4s ago]
+  cmd: `tsc --noEmit`, score: Number of type errors (lower is better)
+  src/api/client.ts:34:12 TS2345 Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  src/api/client.ts:67:5 TS2339 Property 'baseUrl' does not exist on type 'Config'.
+  src/components/Table.tsx:112:23 TS7006 Parameter 'row' implicitly has an 'any' type.
+

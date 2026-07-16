@@ -1,0 +1,11 @@
+now: "2026-07-14T10:00:00Z"
+lastUpdated: "2026-07-14T10:00:00Z"
+
+runners:
+  - name: custom-check
+    parser: default
+    mode: interval
+    interval: 60000
+    command: ./scripts/check-api-contracts.sh
+    input: input.json
+    lastRun: "2026-07-14T09:59:00Z"

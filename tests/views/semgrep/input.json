@@ -1,0 +1,28 @@
+{
+  "results": [
+    {
+      "check_id": "python.lang.security.audit.exec-detected",
+      "path": "src/admin/shell.py",
+      "start": {"line": 37, "col": 5},
+      "end": {"line": 37, "col": 22},
+      "extra": {
+        "message": "Use of exec() detected. This can be a security vulnerability.",
+        "severity": "ERROR",
+        "metadata": {}
+      }
+    },
+    {
+      "check_id": "python.lang.security.audit.hardcoded-password",
+      "path": "src/config/defaults.py",
+      "start": {"line": 12, "col": 1},
+      "end": {"line": 12, "col": 35},
+      "extra": {
+        "message": "Hardcoded password detected. Avoid storing credentials in source code.",
+        "severity": "WARNING",
+        "metadata": {}
+      }
+    }
+  ],
+  "errors": [],
+  "stats": {"findings": 2}
+}

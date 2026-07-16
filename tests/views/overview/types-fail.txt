@@ -1,0 +1,5 @@
+src/api/client.ts(34,12): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+src/api/client.ts(67,5): error TS2339: Property 'baseUrl' does not exist on type 'Config'.
+src/components/Table.tsx(112,23): error TS7006: Parameter 'row' implicitly has an 'any' type.
+
+Found 3 errors in 2 files.

@@ -1,0 +1,19 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.0, pytest-7.4.0
+collected 15 items
+
+tests/test_auth.py ......                                                [  40%]
+tests/test_models.py .......                                             [  86%]
+tests/test_api.py ..                                                     [100%]
+
+---------- coverage: platform linux, python 3.12.0-final-0 ----------
+Name                   Stmts   Miss  Cover   Missing
+----------------------------------------------------
+src/auth.py               42      6    86%   34, 67-70, 89
+src/models.py             78      2    97%   112, 145
+src/api.py                55      4    93%   78, 89-91
+src/utils.py              31      8    74%   18-22, 55, 61-62
+----------------------------------------------------
+TOTAL                    206     20    90%
+
+============================== 15 passed in 2.34s ==============================

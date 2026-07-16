@@ -1,0 +1,9 @@
+SENSORS STATUS
+Updated: 2026-07-14T10:00:00Z (0s ago)
+
+deps: FAILURE (2 errors, 1 warning) [ran 5s ago]
+  cmd: `depcruise src --output-type err-long`, score: Number of dependency violations (lower is better)
+  src/services/auth.ts → src/services/user.ts no-circular This dependency is part of a circular chain.
+  src/utils/legacy.ts → src/utils/helpers.ts no-orphans Orphan module detected: legacy.ts is not reachable from any entry point.
+  src/app.ts → src/dev/mock-server.ts not-to-dev-dep Don't depend on a develop-only dependency in a non-develop source.
+

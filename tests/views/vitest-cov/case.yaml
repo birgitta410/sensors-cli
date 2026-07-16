@@ -1,0 +1,11 @@
+now: "2026-07-14T10:00:00Z"
+lastUpdated: "2026-07-14T10:00:00Z"
+
+runners:
+  - name: coverage
+    parser: vitest_cov
+    mode: interval
+    interval: 30000
+    command: npx vitest run --coverage
+    input: input.json
+    lastRun: "2026-07-14T09:59:40Z"

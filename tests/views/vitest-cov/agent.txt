@@ -1,0 +1,6 @@
+SENSORS STATUS
+Updated: 2026-07-14T10:00:00Z (0s ago)
+
+coverage: SUCCESS (87.5% branch) [ran 20s ago]
+  cmd: `npx vitest run --coverage`, score: Branch coverage percentage (higher is better)
+

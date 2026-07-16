@@ -1,0 +1,54 @@
+{
+  "security": {
+    "success": false,
+    "summary": "2 findings",
+    "score": {
+      "value": 2,
+      "direction": "less",
+      "description": "Number of semgrep findings",
+      "threshold": null
+    },
+    "findings": [
+      {
+        "message": "Use of exec() detected. This can be a security vulnerability.",
+        "severity": "error",
+        "file": "src/admin/shell.py",
+        "line": 37,
+        "column": 5,
+        "rule": "python.lang.security.audit.exec-detected",
+        "context": null
+      },
+      {
+        "message": "Hardcoded password detected. Avoid storing credentials in source code.",
+        "severity": "warning",
+        "file": "src/config/defaults.py",
+        "line": 12,
+        "column": 1,
+        "rule": "python.lang.security.audit.hardcoded-password",
+        "context": null
+      }
+    ],
+    "metrics": [
+      {
+        "key": "findingCount",
+        "label": "Findings",
+        "value": 2,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "errorCount",
+        "label": "Errors",
+        "value": 0,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      }
+    ],
+    "guidance": [],
+    "extra": {
+      "errors": []
+    }
+  }
+}

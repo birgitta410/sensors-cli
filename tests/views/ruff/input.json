@@ -1,0 +1,29 @@
+[
+  {
+    "code": "E501",
+    "message": "Line too long (92 > 88 characters)",
+    "filename": "src/api/handlers.py",
+    "location": {"row": 14, "column": 89},
+    "end_location": {"row": 14, "column": 92},
+    "fix": null,
+    "url": "https://docs.astral.sh/ruff/rules/line-too-long"
+  },
+  {
+    "code": "F401",
+    "message": "'os.path' imported but unused",
+    "filename": "src/utils/files.py",
+    "location": {"row": 3, "column": 1},
+    "end_location": {"row": 3, "column": 12},
+    "fix": null,
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "code": "B006",
+    "message": "Do not use mutable data structures for argument defaults",
+    "filename": "src/models/user.py",
+    "location": {"row": 22, "column": 24},
+    "end_location": {"row": 22, "column": 26},
+    "fix": null,
+    "url": "https://docs.astral.sh/ruff/rules/mutable-argument-default"
+  }
+]

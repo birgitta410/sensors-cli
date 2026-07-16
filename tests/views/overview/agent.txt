@@ -1,0 +1,31 @@
+SENSORS STATUS
+Updated: 2026-07-14T11:00:00Z (0s ago)
+
+lint: SUCCESS (No issues) [ran 5s ago] | Better than snapshot (-3)
+  cmd: `eslint src --format json`, score: Number of lint issues (lower is better)
+  prompt: Keep lint clean before merging.
+
+tests: FAILURE (2 failed, 13 passed) [ran 10s ago] | Worse than snapshot (+2)
+  cmd: `uv run pytest tests/ -v`, score: Number of failing tests and errors (lower is better)
+  prompt: Fix failing tests before moving on.
+  test_create_user_duplicate_email test_failure def test_create_user_duplicate_email():
+    user = create_user(email="existing@example.com")
+>   assert user is None
+E   AssertionError: assert <User id=42> is None
+
+tests/test_api.py:34: AssertionError
+  test_delete_nonexistent test_failure def test_delete_nonexistent():
+>   result = delete_user(user_id=99999)
+E   ValueError: User not found
+
+tests/test_api.py:51: ValueError
+
+coverage: SUCCESS (90% coverage, 15 passed) [ran 10s ago]
+  cmd: `uv run pytest --cov=src --cov-report=term-missing`, score: Test coverage percentage (higher is better)
+
+types: FAILURE (3 errors in 2 files) [ran 4s ago] | Worse than snapshot (+2)
+  cmd: `tsc --noEmit`, score: Number of type errors (lower is better)
+  src/api/client.ts:34:12 TS2345 Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  src/api/client.ts:67:5 TS2339 Property 'baseUrl' does not exist on type 'Config'.
+  src/components/Table.tsx:112:23 TS7006 Parameter 'row' implicitly has an 'any' type.
+

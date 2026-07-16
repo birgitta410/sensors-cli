@@ -1,0 +1,11 @@
+now: "2026-07-14T10:00:00Z"
+lastUpdated: "2026-07-14T10:00:00Z"
+
+runners:
+  - name: types
+    parser: tsc
+    mode: interval
+    interval: 15000
+    command: tsc --noEmit
+    input: input.txt
+    lastRun: "2026-07-14T09:59:56Z"

@@ -1,0 +1,8 @@
+SENSORS STATUS
+Updated: 2026-07-14T10:00:00Z (0s ago)
+
+styles: FAILURE (1 error, 1 warning) [ran 7s ago]
+  cmd: `stylelint "src/**/*.css" --formatter json`, score: Number of stylelint issues (lower is better)
+  src/components/card.css:8:3 color-no-invalid-hex Unexpected invalid hex color "#zzz" (color-no-invalid-hex)
+  src/components/card.css:23:5 declaration-block-no-duplicate-properties Unexpected duplicate property "margin" (declaration-block-no-duplicate-properties)
+

@@ -1,0 +1,6 @@
+SENSORS STATUS
+Updated: 2026-07-14T10:00:00Z (0s ago)
+
+mutation: SUCCESS (77.78% of covered (70.00% of total, 2 survived, 7/10 valid)) [ran 6m ago]
+  cmd: `npx stryker run`, score: Mutation score (% of covered) (higher is better)
+

@@ -27,7 +27,7 @@ import yaml
 from sensors import cli
 from sensors.config.result_types import SensorReading
 from sensors.config.schema import RunnerConfig
-from sensors.persistence.models import RunnerEntry, StateEntry
+from sensors.persistence.models import RunnerEntry, SnapshotEntry, StateEntry
 from sensors.runners.parsers import ParserRegistry
 from sensors.time_util import parse_timestamp
 from sensors.tui.render import render_state_to_text
@@ -85,7 +85,26 @@ def load_case(case_dir: Path) -> LoadedCase:
             reading=reading,
         )
 
-    state = StateEntry(lastUpdated=last_updated, runners=runners)
+    snapshot: SnapshotEntry | None = None
+    if "snapshot" in data:
+        snap = data["snapshot"]
+        snap_runners: dict[str, RunnerEntry] = {}
+        for r in snap.get("runners", []):
+            raw_output = (case_dir / r["input"]).read_text(encoding="utf-8")
+            # Snapshot inputs are internal baseline data, not displayed as story panels.
+            snap_reading = ParserRegistry.get(r["parser"])().parse(raw_output)
+            snap_runners[r["name"]] = RunnerEntry(
+                lastRun=parse_timestamp(r["lastRun"]),
+                status=r.get("status") or _status_for(snap_reading),
+                reading=snap_reading,
+            )
+        snapshot = SnapshotEntry(
+            snapshot_id=snap.get("id", "fixture-snapshot"),
+            timestamp=parse_timestamp(snap.get("timestamp", data["now"])),
+            runners=snap_runners,
+        )
+
+    state = StateEntry(lastUpdated=last_updated, runners=runners, snapshot=snapshot)
     return LoadedCase(now=now, state=state, configs=configs, input_names=input_names)
 
 

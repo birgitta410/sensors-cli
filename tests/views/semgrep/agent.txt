@@ -1,0 +1,8 @@
+SENSORS STATUS
+Updated: 2026-07-14T10:00:00Z (0s ago)
+
+security: FAILURE (2 findings) [ran 2m ago]
+  cmd: `semgrep --config p/python --json src/`, score: Number of semgrep findings (lower is better)
+  src/admin/shell.py:37:5 python.lang.security.audit.exec-detected Use of exec() detected. This can be a security vulnerability.
+  src/config/defaults.py:12:1 python.lang.security.audit.hardcoded-password Hardcoded password detected. Avoid storing credentials in source code.
+

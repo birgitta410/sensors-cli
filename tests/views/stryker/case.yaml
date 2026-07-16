@@ -1,0 +1,11 @@
+now: "2026-07-14T10:00:00Z"
+lastUpdated: "2026-07-14T10:00:00Z"
+
+runners:
+  - name: mutation
+    parser: stryker
+    mode: interval
+    interval: 300000
+    command: npx stryker run
+    input: input.json
+    lastRun: "2026-07-14T09:54:00Z"

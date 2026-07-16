@@ -1,0 +1,9 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.0, pytest-7.4.0
+collected 15 items
+
+tests/test_auth.py ......                                                [  40%]
+tests/test_models.py .......                                             [  86%]
+tests/test_api.py ..                                                     [100%]
+
+============================== 15 passed in 1.98s ==============================

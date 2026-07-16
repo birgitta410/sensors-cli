@@ -1,0 +1,9 @@
+SENSORS STATUS
+Updated: 2026-07-14T10:00:00Z (0s ago)
+
+lint: FAILURE (2 errors, 1 warning) [ran 10s ago]
+  cmd: `eslint src --format json`, score: Number of lint issues (lower is better)
+  src/components/Button.tsx:12:7 no-unused-vars 'onClick' is defined but never used.
+  src/components/Button.tsx:28:5 react-hooks/exhaustive-deps React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array.
+  src/utils/format.ts:45:14 eqeqeq Expected '===' and instead saw '=='.
+

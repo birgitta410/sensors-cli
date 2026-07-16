@@ -1,0 +1,11 @@
+now: "2026-07-14T10:00:00Z"
+lastUpdated: "2026-07-14T10:00:00Z"
+
+runners:
+  - name: lint
+    parser: ruff
+    mode: interval
+    interval: 10000
+    command: ruff check src --output-format json
+    input: input.json
+    lastRun: "2026-07-14T09:59:58Z"

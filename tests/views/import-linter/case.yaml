@@ -1,0 +1,11 @@
+now: "2026-07-14T10:00:00Z"
+lastUpdated: "2026-07-14T10:00:00Z"
+
+runners:
+  - name: imports
+    parser: import_linter
+    mode: interval
+    interval: 30000
+    command: lint-imports
+    input: input.txt
+    lastRun: "2026-07-14T09:59:52Z"

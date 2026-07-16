@@ -1,0 +1,35 @@
+{
+  "imports": {
+    "success": false,
+    "summary": "1 broken, 2 kept",
+    "score": {
+      "value": 1,
+      "direction": "less",
+      "description": "Number of broken import contracts",
+      "threshold": null
+    },
+    "findings": [],
+    "metrics": [
+      {
+        "key": "keptCount",
+        "label": "Kept",
+        "value": 2,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "brokenCount",
+        "label": "Broken",
+        "value": 1,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      }
+    ],
+    "guidance": [],
+    "extra": {
+      "contracts": []
+    }
+  }
+}

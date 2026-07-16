@@ -1,0 +1,7 @@
+SENSORS STATUS
+Updated: 2026-07-14T10:00:00Z (0s ago)
+
+imports: FAILURE (1 broken, 2 kept) [ran 8s ago]
+  cmd: `lint-imports`, score: Number of broken import contracts (lower is better)
+1 broken, 2 kept
+

@@ -1,0 +1,26 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.0, pytest-7.4.0
+collected 15 items
+
+tests/test_auth.py ......                                                [  40%]
+tests/test_models.py .......                                             [  86%]
+tests/test_api.py FF                                                     [100%]
+
+=================================== FAILURES ===================================
+______________________ test_create_user_duplicate_email ________________________
+def test_create_user_duplicate_email():
+    user = create_user(email="existing@example.com")
+>   assert user is None
+E   AssertionError: assert <User id=42> is None
+
+tests/test_api.py:34: AssertionError
+__________________________ test_delete_nonexistent ____________________________
+def test_delete_nonexistent():
+>   result = delete_user(user_id=99999)
+E   ValueError: User not found
+
+tests/test_api.py:51: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_api.py::test_create_user_duplicate_email
+FAILED tests/test_api.py::test_delete_nonexistent
+========================= 2 failed, 13 passed in 2.11s =========================

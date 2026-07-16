@@ -1,0 +1,8 @@
+  error no-circular: src/services/auth.ts → src/services/user.ts
+    This dependency is part of a circular chain.
+  error no-orphans: src/utils/legacy.ts → src/utils/helpers.ts
+    Orphan module detected: legacy.ts is not reachable from any entry point.
+  warn not-to-dev-dep: src/app.ts → src/dev/mock-server.ts
+    Don't depend on a develop-only dependency in a non-develop source.
+
+✖ 3 dependency violations (2 errors, 1 warning). 87 modules, 214 dependencies cruised.

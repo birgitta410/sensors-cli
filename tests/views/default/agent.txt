@@ -1,0 +1,8 @@
+SENSORS STATUS
+Updated: 2026-07-14T10:00:00Z (0s ago)
+
+custom-check: FAILURE (2 contract violations) [ran 1m ago]
+  cmd: `./scripts/check-api-contracts.sh`, score: Number of API contract violations (lower is better)
+  api/users/{id} breaking-change Response field 'userId' changed type from integer to string
+  api/auth/login schema-mismatch Required request field 'email' is now optional
+

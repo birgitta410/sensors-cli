@@ -1,0 +1,52 @@
+{
+  "styles": {
+    "success": false,
+    "summary": "1 error, 1 warning",
+    "score": {
+      "value": 2,
+      "direction": "less",
+      "description": "Number of stylelint issues",
+      "threshold": null
+    },
+    "findings": [
+      {
+        "message": "Unexpected invalid hex color \"#zzz\" (color-no-invalid-hex)",
+        "severity": "error",
+        "file": "src/components/card.css",
+        "line": 8,
+        "column": 3,
+        "rule": "color-no-invalid-hex",
+        "context": null
+      },
+      {
+        "message": "Unexpected duplicate property \"margin\" (declaration-block-no-duplicate-properties)",
+        "severity": "warning",
+        "file": "src/components/card.css",
+        "line": 23,
+        "column": 5,
+        "rule": "declaration-block-no-duplicate-properties",
+        "context": null
+      }
+    ],
+    "metrics": [
+      {
+        "key": "errorCount",
+        "label": "Errors",
+        "value": 1,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "warningCount",
+        "label": "Warnings",
+        "value": 1,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      }
+    ],
+    "guidance": [],
+    "extra": {}
+  }
+}

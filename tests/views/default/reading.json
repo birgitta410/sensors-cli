@@ -1,0 +1,55 @@
+{
+  "custom-check": {
+    "success": false,
+    "summary": "2 contract violations",
+    "score": {
+      "value": 2,
+      "direction": "less",
+      "description": "Number of API contract violations",
+      "threshold": null
+    },
+    "findings": [
+      {
+        "message": "Response field 'userId' changed type from integer to string",
+        "severity": "error",
+        "file": "api/users/{id}",
+        "line": null,
+        "column": null,
+        "rule": "breaking-change",
+        "context": null
+      },
+      {
+        "message": "Required request field 'email' is now optional",
+        "severity": "warning",
+        "file": "api/auth/login",
+        "line": null,
+        "column": null,
+        "rule": "schema-mismatch",
+        "context": null
+      }
+    ],
+    "metrics": [
+      {
+        "key": "breaking",
+        "label": "Breaking",
+        "value": 1,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "warnings",
+        "label": "Warnings",
+        "value": 1,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      }
+    ],
+    "guidance": [],
+    "extra": {
+      "contractVersion": "v2.3.1",
+      "checkedEndpoints": 14
+    }
+  }
+}

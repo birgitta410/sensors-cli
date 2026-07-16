@@ -1,0 +1,11 @@
+SENSORS STATUS
+Updated: 2026-07-14T10:00:00Z (0s ago)
+
+tests: FAILURE (1 failed, 13 passed) [ran 5s ago]
+  cmd: `npx vitest run`, score: Number of failing tests (lower is better)
+  src/components/Button.test.tsx test_failure AssertionError: expected 'Submit' to equal 'Click me'
+ ❯ src/components/Button.test.tsx:18:34
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+    src/components/Button.test.tsx > Button > renders with correct label
+

@@ -225,7 +225,7 @@ body {
 }
 #header h1 { font-size: 1rem; color: #58a6ff; }
 #story-nav { display: flex; align-items: center; gap: 0.5rem; margin-left: auto; }
-#story-nav button {
+#story-nav button, #btn-sidebar-toggle {
   background: #21262d;
   border: 1px solid #30363d;
   color: #c9d1d9;
@@ -233,10 +233,71 @@ body {
   cursor: pointer;
   border-radius: 4px;
   font-size: 12px;
+  font-family: inherit;
 }
-#story-nav button:hover { background: #30363d; }
+#story-nav button:hover, #btn-sidebar-toggle:hover { background: #30363d; }
 #story-label { color: #e6edf3; font-weight: bold; }
 #story-status { font-size: 12px; }
+
+/* ---- Sidebar + main ---- */
+#body-row {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+#sidebar {
+  width: 180px;
+  flex-shrink: 0;
+  background: #161b22;
+  border-right: 1px solid #30363d;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 0.15s ease;
+}
+#sidebar.collapsed { width: 0; border-right: none; }
+
+#sidebar-inner {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.4rem 0;
+  min-width: 180px; /* keeps items from reflowing during transition */
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 12px;
+  color: #8b949e;
+  border-left: 2px solid transparent;
+  user-select: none;
+}
+.sidebar-item:hover { background: #21262d; color: #c9d1d9; }
+.sidebar-item.active {
+  background: #21262d;
+  color: #e6edf3;
+  border-left-color: #58a6ff;
+}
+.sidebar-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #3fb950;
+}
+.sidebar-dot.drift { background: #f85149; }
+
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
 #columns {
   display: grid;
@@ -273,6 +334,7 @@ body {
   flex: 1;
   min-height: 0;
 }
+.panel--spec { min-height: 12rem; }
 .panel-header {
   display: flex;
   align-items: center;
@@ -500,6 +562,7 @@ body {
 <body>
 
 <div id="header">
+  <button id="btn-sidebar-toggle" title="Toggle sidebar (s)">&#9776;</button>
   <h1>Sensors Story Viewer</h1>
   <div id="story-nav">
     <button id="btn-prev" title="Previous story (←/p)">&larr;</button>
@@ -509,20 +572,24 @@ body {
   <span id="story-status"></span>
 </div>
 
-<div id="columns">
-  <div class="column" id="col-inputs">
-    <div class="column-header">Inputs</div>
-    <!-- panels injected here -->
+<div id="body-row">
+  <div id="sidebar">
+    <div id="sidebar-inner"><!-- items injected by JS --></div>
   </div>
-  <div class="column" id="col-outputs">
-    <div class="column-header">Outputs</div>
-    <!-- panels injected here -->
+  <div id="main">
+    <div id="columns">
+      <div class="column" id="col-inputs">
+        <div class="column-header">Inputs</div>
+      </div>
+      <div class="column" id="col-outputs">
+        <div class="column-header">Outputs</div>
+      </div>
+    </div>
+    <div id="footer">
+      <span><kbd>←</kbd>/<kbd>→</kbd> or <kbd>p</kbd>/<kbd>n</kbd> — switch story</span>
+      <span><kbd>s</kbd> — toggle sidebar</span>
+    </div>
   </div>
-</div>
-
-<div id="footer">
-  <span><kbd>←</kbd>/<kbd>→</kbd> or <kbd>p</kbd>/<kbd>n</kbd> — switch story</span>
-  <span><kbd>r</kbd> — regenerate (re-run script, re-open)</span>
 </div>
 
 <script>
@@ -739,7 +806,7 @@ function renderReadingVisual(data) {
 // ---- Render ----
 function renderPanel(cell) {
   const div = document.createElement('div');
-  div.className = 'panel';
+  div.className = 'panel' + (cell.cid === 'case.yaml' ? ' panel--spec' : '');
 
   // Header
   const hdr = document.createElement('div');
@@ -806,6 +873,35 @@ function renderPanel(cell) {
   return div;
 }
 
+// ---- Sidebar ----
+function buildSidebar() {
+  const inner = document.getElementById('sidebar-inner');
+  inner.innerHTML = '';
+  STORIES.forEach((story, idx) => {
+    const item = document.createElement('div');
+    item.className = 'sidebar-item';
+    item.dataset.idx = idx;
+    const dot = document.createElement('span');
+    dot.className = 'sidebar-dot' + (story.allMatch ? '' : ' drift');
+    const label = document.createElement('span');
+    label.textContent = story.name;
+    item.appendChild(dot);
+    item.appendChild(label);
+    item.addEventListener('click', () => jumpTo(idx));
+    inner.appendChild(item);
+  });
+}
+
+function updateSidebarActive(idx) {
+  document.querySelectorAll('.sidebar-item').forEach(el => {
+    el.classList.toggle('active', Number(el.dataset.idx) === idx);
+  });
+  // Scroll active item into view
+  const active = document.querySelector('.sidebar-item.active');
+  if (active) active.scrollIntoView({ block: 'nearest' });
+}
+
+// ---- Story display ----
 function showStory(idx) {
   const story = STORIES[idx];
 
@@ -834,6 +930,8 @@ function showStory(idx) {
       colOut.appendChild(panel);
     }
   }
+
+  updateSidebarActive(idx);
 }
 
 let currentIdx = 0;
@@ -843,15 +941,30 @@ function navigate(delta) {
   showStory(currentIdx);
 }
 
+function jumpTo(idx) {
+  currentIdx = idx;
+  showStory(currentIdx);
+}
+
+// ---- Sidebar toggle ----
+const sidebar = document.getElementById('sidebar');
+function toggleSidebar() {
+  sidebar.classList.toggle('collapsed');
+}
+document.getElementById('btn-sidebar-toggle').addEventListener('click', toggleSidebar);
+
 document.getElementById('btn-prev').addEventListener('click', () => navigate(-1));
 document.getElementById('btn-next').addEventListener('click', () => navigate(1));
 
 document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (e.key === 'ArrowRight' || e.key === 'n') navigate(1);
   if (e.key === 'ArrowLeft'  || e.key === 'p') navigate(-1);
+  if (e.key === 's') toggleSidebar();
 });
 
 // Initial render
+buildSidebar();
 if (STORIES.length > 0) {
   showStory(0);
 } else {

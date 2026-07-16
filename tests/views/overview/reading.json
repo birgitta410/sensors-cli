@@ -1,0 +1,242 @@
+{
+  "lint": {
+    "success": true,
+    "summary": "No issues",
+    "score": {
+      "value": 0,
+      "direction": "less",
+      "description": "Number of lint issues",
+      "threshold": null
+    },
+    "findings": [],
+    "metrics": [
+      {
+        "key": "errorCount",
+        "label": "Errors",
+        "value": 0,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "warningCount",
+        "label": "Warnings",
+        "value": 0,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      }
+    ],
+    "guidance": [],
+    "extra": {}
+  },
+  "tests": {
+    "success": false,
+    "summary": "2 failed, 13 passed",
+    "score": {
+      "value": 2,
+      "direction": "less",
+      "description": "Number of failing tests and errors",
+      "threshold": null
+    },
+    "findings": [
+      {
+        "message": "def test_create_user_duplicate_email():\n    user = create_user(email=\"existing@example.com\")\n>   assert user is None\nE   AssertionError: assert <User id=42> is None\n\ntests/test_api.py:34: AssertionError",
+        "severity": "error",
+        "file": "test_create_user_duplicate_email",
+        "line": null,
+        "column": null,
+        "rule": "test_failure",
+        "context": null
+      },
+      {
+        "message": "def test_delete_nonexistent():\n>   result = delete_user(user_id=99999)\nE   ValueError: User not found\n\ntests/test_api.py:51: ValueError",
+        "severity": "error",
+        "file": "test_delete_nonexistent",
+        "line": null,
+        "column": null,
+        "rule": "test_failure",
+        "context": null
+      }
+    ],
+    "metrics": [
+      {
+        "key": "passed",
+        "label": "Passed",
+        "value": 13,
+        "unit": null,
+        "direction": "more",
+        "threshold": null
+      },
+      {
+        "key": "failed",
+        "label": "Failed",
+        "value": 2,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "errors",
+        "label": "Errors",
+        "value": 0,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "warnings",
+        "label": "Warnings",
+        "value": 0,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      }
+    ],
+    "guidance": [],
+    "extra": {
+      "label": "test session starts"
+    }
+  },
+  "coverage": {
+    "success": true,
+    "summary": "90% coverage, 15 passed",
+    "score": {
+      "value": 90,
+      "direction": "more",
+      "description": "Test coverage percentage",
+      "threshold": null
+    },
+    "findings": [],
+    "metrics": [
+      {
+        "key": "totalCoverage",
+        "label": "Coverage",
+        "value": 90,
+        "unit": "%",
+        "direction": "more",
+        "threshold": null
+      },
+      {
+        "key": "passed",
+        "label": "Passed",
+        "value": 15,
+        "unit": null,
+        "direction": "more",
+        "threshold": null
+      },
+      {
+        "key": "failed",
+        "label": "Failed",
+        "value": 0,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "misses",
+        "label": "Misses",
+        "value": 20,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      }
+    ],
+    "guidance": [],
+    "extra": {
+      "totalStatements": 206,
+      "numSkipped": 0,
+      "files": [
+        {
+          "name": "src/auth.py",
+          "stmts": 42,
+          "miss": 6,
+          "cover": 86,
+          "missing": "34, 67-70, 89"
+        },
+        {
+          "name": "src/models.py",
+          "stmts": 78,
+          "miss": 2,
+          "cover": 97,
+          "missing": "112, 145"
+        },
+        {
+          "name": "src/api.py",
+          "stmts": 55,
+          "miss": 4,
+          "cover": 93,
+          "missing": "78, 89-91"
+        },
+        {
+          "name": "src/utils.py",
+          "stmts": 31,
+          "miss": 8,
+          "cover": 74,
+          "missing": "18-22, 55, 61-62"
+        }
+      ],
+      "coverageFailure": null,
+      "label": "test session starts"
+    }
+  },
+  "types": {
+    "success": false,
+    "summary": "3 errors in 2 files",
+    "score": {
+      "value": 3,
+      "direction": "less",
+      "description": "Number of type errors",
+      "threshold": null
+    },
+    "findings": [
+      {
+        "message": "Argument of type 'string | undefined' is not assignable to parameter of type 'string'.",
+        "severity": "error",
+        "file": "src/api/client.ts",
+        "line": 34,
+        "column": 12,
+        "rule": "TS2345",
+        "context": null
+      },
+      {
+        "message": "Property 'baseUrl' does not exist on type 'Config'.",
+        "severity": "error",
+        "file": "src/api/client.ts",
+        "line": 67,
+        "column": 5,
+        "rule": "TS2339",
+        "context": null
+      },
+      {
+        "message": "Parameter 'row' implicitly has an 'any' type.",
+        "severity": "error",
+        "file": "src/components/Table.tsx",
+        "line": 112,
+        "column": 23,
+        "rule": "TS7006",
+        "context": null
+      }
+    ],
+    "metrics": [
+      {
+        "key": "errorCount",
+        "label": "Errors",
+        "value": 3,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "fileCount",
+        "label": "Files",
+        "value": 2,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      }
+    ],
+    "guidance": [],
+    "extra": {}
+  }
+}

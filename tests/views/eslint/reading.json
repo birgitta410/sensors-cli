@@ -1,0 +1,61 @@
+{
+  "lint": {
+    "success": false,
+    "summary": "2 errors, 1 warning",
+    "score": {
+      "value": 3,
+      "direction": "less",
+      "description": "Number of lint issues",
+      "threshold": null
+    },
+    "findings": [
+      {
+        "message": "'onClick' is defined but never used.",
+        "severity": "error",
+        "file": "src/components/Button.tsx",
+        "line": 12,
+        "column": 7,
+        "rule": "no-unused-vars",
+        "context": null
+      },
+      {
+        "message": "React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array.",
+        "severity": "error",
+        "file": "src/components/Button.tsx",
+        "line": 28,
+        "column": 5,
+        "rule": "react-hooks/exhaustive-deps",
+        "context": null
+      },
+      {
+        "message": "Expected '===' and instead saw '=='.",
+        "severity": "warning",
+        "file": "src/utils/format.ts",
+        "line": 45,
+        "column": 14,
+        "rule": "eqeqeq",
+        "context": null
+      }
+    ],
+    "metrics": [
+      {
+        "key": "errorCount",
+        "label": "Errors",
+        "value": 2,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "warningCount",
+        "label": "Warnings",
+        "value": 1,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      }
+    ],
+    "guidance": [],
+    "extra": {}
+  }
+}

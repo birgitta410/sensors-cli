@@ -1,0 +1,11 @@
+now: "2026-07-14T10:00:00Z"
+lastUpdated: "2026-07-14T10:00:00Z"
+
+runners:
+  - name: lint
+    parser: eslint
+    mode: interval
+    interval: 15000
+    command: eslint src --format json
+    input: input.json
+    lastRun: "2026-07-14T09:59:50Z"

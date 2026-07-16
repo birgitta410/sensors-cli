@@ -1,0 +1,61 @@
+{
+  "deps": {
+    "success": false,
+    "summary": "2 errors, 1 warning",
+    "score": {
+      "value": 3,
+      "direction": "less",
+      "description": "Number of dependency violations",
+      "threshold": null
+    },
+    "findings": [
+      {
+        "message": "This dependency is part of a circular chain.",
+        "severity": "error",
+        "file": "src/services/auth.ts → src/services/user.ts",
+        "line": null,
+        "column": null,
+        "rule": "no-circular",
+        "context": null
+      },
+      {
+        "message": "Orphan module detected: legacy.ts is not reachable from any entry point.",
+        "severity": "error",
+        "file": "src/utils/legacy.ts → src/utils/helpers.ts",
+        "line": null,
+        "column": null,
+        "rule": "no-orphans",
+        "context": null
+      },
+      {
+        "message": "Don't depend on a develop-only dependency in a non-develop source.",
+        "severity": "warning",
+        "file": "src/app.ts → src/dev/mock-server.ts",
+        "line": null,
+        "column": null,
+        "rule": "not-to-dev-dep",
+        "context": null
+      }
+    ],
+    "metrics": [
+      {
+        "key": "errorCount",
+        "label": "Errors",
+        "value": 2,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "warningCount",
+        "label": "Warnings",
+        "value": 1,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      }
+    ],
+    "guidance": [],
+    "extra": {}
+  }
+}

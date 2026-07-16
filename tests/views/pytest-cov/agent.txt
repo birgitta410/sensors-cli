@@ -1,0 +1,6 @@
+SENSORS STATUS
+Updated: 2026-07-14T10:00:00Z (0s ago)
+
+tests: SUCCESS (90% coverage, 18 passed) [ran 12s ago]
+  cmd: `uv run pytest --cov=src --cov-report=term-missing`, score: Test coverage percentage (higher is better)
+

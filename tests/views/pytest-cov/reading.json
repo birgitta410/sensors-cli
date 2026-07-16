@@ -1,0 +1,84 @@
+{
+  "tests": {
+    "success": true,
+    "summary": "90% coverage, 18 passed",
+    "score": {
+      "value": 90,
+      "direction": "more",
+      "description": "Test coverage percentage",
+      "threshold": null
+    },
+    "findings": [],
+    "metrics": [
+      {
+        "key": "totalCoverage",
+        "label": "Coverage",
+        "value": 90,
+        "unit": "%",
+        "direction": "more",
+        "threshold": null
+      },
+      {
+        "key": "passed",
+        "label": "Passed",
+        "value": 18,
+        "unit": null,
+        "direction": "more",
+        "threshold": null
+      },
+      {
+        "key": "failed",
+        "label": "Failed",
+        "value": 0,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "misses",
+        "label": "Misses",
+        "value": 16,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      }
+    ],
+    "guidance": [],
+    "extra": {
+      "totalStatements": 166,
+      "numSkipped": 0,
+      "files": [
+        {
+          "name": "src/auth.py",
+          "stmts": 42,
+          "miss": 6,
+          "cover": 86,
+          "missing": "34, 67-70, 89"
+        },
+        {
+          "name": "src/models.py",
+          "stmts": 78,
+          "miss": 2,
+          "cover": 97,
+          "missing": "112, 145"
+        },
+        {
+          "name": "src/utils.py",
+          "stmts": 31,
+          "miss": 8,
+          "cover": 74,
+          "missing": "18-22, 55, 61-62"
+        },
+        {
+          "name": "src/config.py",
+          "stmts": 15,
+          "miss": 0,
+          "cover": 100,
+          "missing": ""
+        }
+      ],
+      "coverageFailure": null,
+      "label": "test session starts"
+    }
+  }
+}

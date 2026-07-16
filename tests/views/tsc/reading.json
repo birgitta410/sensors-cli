@@ -1,0 +1,61 @@
+{
+  "types": {
+    "success": false,
+    "summary": "3 errors in 2 files",
+    "score": {
+      "value": 3,
+      "direction": "less",
+      "description": "Number of type errors",
+      "threshold": null
+    },
+    "findings": [
+      {
+        "message": "Argument of type 'string | undefined' is not assignable to parameter of type 'string'.",
+        "severity": "error",
+        "file": "src/api/client.ts",
+        "line": 34,
+        "column": 12,
+        "rule": "TS2345",
+        "context": null
+      },
+      {
+        "message": "Property 'baseUrl' does not exist on type 'Config'.",
+        "severity": "error",
+        "file": "src/api/client.ts",
+        "line": 67,
+        "column": 5,
+        "rule": "TS2339",
+        "context": null
+      },
+      {
+        "message": "Parameter 'row' implicitly has an 'any' type.",
+        "severity": "error",
+        "file": "src/components/Table.tsx",
+        "line": 112,
+        "column": 23,
+        "rule": "TS7006",
+        "context": null
+      }
+    ],
+    "metrics": [
+      {
+        "key": "errorCount",
+        "label": "Errors",
+        "value": 3,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      },
+      {
+        "key": "fileCount",
+        "label": "Files",
+        "value": 2,
+        "unit": null,
+        "direction": "less",
+        "threshold": null
+      }
+    ],
+    "guidance": [],
+    "extra": {}
+  }
+}

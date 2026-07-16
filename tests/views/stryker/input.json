@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1",
+  "thresholds": {"high": 80, "low": 60},
+  "files": {
+    "src/math.ts": {
+      "mutants": [
+        {"id": "1", "status": "Killed",    "mutatorName": "ArithmeticOperator"},
+        {"id": "2", "status": "Killed",    "mutatorName": "ArithmeticOperator"},
+        {"id": "3", "status": "Survived",  "mutatorName": "ConditionalExpression"},
+        {"id": "4", "status": "Killed",    "mutatorName": "BooleanLiteral"},
+        {"id": "5", "status": "Timeout",   "mutatorName": "ArithmeticOperator"},
+        {"id": "6", "status": "NoCoverage","mutatorName": "StringLiteral"}
+      ]
+    },
+    "src/format.ts": {
+      "mutants": [
+        {"id": "7",  "status": "Killed",   "mutatorName": "StringLiteral"},
+        {"id": "8",  "status": "Survived", "mutatorName": "ConditionalExpression"},
+        {"id": "9",  "status": "Killed",   "mutatorName": "EqualityOperator"},
+        {"id": "10", "status": "Killed",   "mutatorName": "EqualityOperator"}
+      ]
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "coverage": {
+    "success": true,
+    "summary": "87.5% branch",
+    "score": {
+      "value": 87,
+      "direction": "more",
+      "description": "Branch coverage percentage",
+      "threshold": null
+    },
+    "findings": [],
+    "metrics": [
+      {
+        "key": "totalBranch",
+        "label": "Branch coverage",
+        "value": 87.5,
+        "unit": "%",
+        "direction": "more",
+        "threshold": 80.0
+      },
+      {
+        "key": "totalStmts",
+        "label": "Statement coverage",
+        "value": 88.89,
+        "unit": "%",
+        "direction": "more",
+        "threshold": null
+      },
+      {
+        "key": "totalFuncs",
+        "label": "Function coverage",
+        "value": 100.0,
+        "unit": "%",
+        "direction": "more",
+        "threshold": null
+      },
+      {
+        "key": "totalLines",
+        "label": "Line coverage",
+        "value": 88.89,
+        "unit": "%",
+        "direction": "more",
+        "threshold": null
+      }
+    ],
+    "guidance": [],
+    "extra": {
+      "files": [
+        {
+          "name": "format.ts",
+          "path": "src/utils/format.ts",
+          "stmts": 80.0,
+          "branch": 75.0,
+          "funcs": 100.0,
+          "lines": 80.0,
+          "uncovered": "12"
+        },
+        {
+          "name": "validate.ts",
+          "path": "src/utils/validate.ts",
+          "stmts": 100.0,
+          "branch": 100.0,
+          "funcs": 100.0,
+          "lines": 100.0,
+          "uncovered": ""
+        }
+      ]
+    }
+  }
+}

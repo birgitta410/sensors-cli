@@ -1,0 +1,27 @@
+[
+  {
+    "source": "src/components/card.css",
+    "warnings": [
+      {
+        "line": 8,
+        "column": 3,
+        "rule": "color-no-invalid-hex",
+        "severity": "error",
+        "text": "Unexpected invalid hex color \"#zzz\" (color-no-invalid-hex)"
+      },
+      {
+        "line": 23,
+        "column": 5,
+        "rule": "declaration-block-no-duplicate-properties",
+        "severity": "warning",
+        "text": "Unexpected duplicate property \"margin\" (declaration-block-no-duplicate-properties)"
+      }
+    ],
+    "parseErrors": []
+  },
+  {
+    "source": "src/globals.css",
+    "warnings": [],
+    "parseErrors": []
+  }
+]

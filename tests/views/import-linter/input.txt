@@ -1,0 +1,24 @@
+=============
+Import Linter
+=============
+
+.......
+
+Contracts: 2 kept, 1 broken.
+
+----------------------------
+Violated contracts
+
+Domain independence
+-------------------
+
+Domain modules must not import from the application layer:
+
+    - myapp.domain.user -> myapp.application.services (l.14)
+    - myapp.domain.order -> myapp.application.handlers (l.7)
+
+----------------
+Kept contracts
+
+Services layer
+Data access layer

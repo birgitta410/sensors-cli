@@ -1,0 +1,19 @@
+ DEV  v1.6.0
+
+ ✓ src/utils/format.test.ts (4)
+ ✓ src/utils/validate.test.ts (3)
+ ✗ src/components/Button.test.tsx (2)
+ ✓ src/api/client.test.ts (5)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/Button.test.tsx > Button > renders with correct label
+AssertionError: expected 'Submit' to equal 'Click me'
+ ❯ src/components/Button.test.tsx:18:34
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  1 failed | 13 passed (14)
+   Start at  09:59:55
+   Duration  847ms

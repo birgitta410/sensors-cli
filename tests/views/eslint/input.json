@@ -1,0 +1,37 @@
+[
+  {
+    "filePath": "src/components/Button.tsx",
+    "messages": [
+      {
+        "ruleId": "no-unused-vars",
+        "severity": 2,
+        "message": "'onClick' is defined but never used.",
+        "line": 12,
+        "column": 7
+      },
+      {
+        "ruleId": "react-hooks/exhaustive-deps",
+        "severity": 2,
+        "message": "React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array.",
+        "line": 28,
+        "column": 5
+      }
+    ],
+    "errorCount": 2,
+    "warningCount": 0
+  },
+  {
+    "filePath": "src/utils/format.ts",
+    "messages": [
+      {
+        "ruleId": "eqeqeq",
+        "severity": 1,
+        "message": "Expected '===' and instead saw '=='.",
+        "line": 45,
+        "column": 14
+      }
+    ],
+    "errorCount": 0,
+    "warningCount": 1
+  }
+]
