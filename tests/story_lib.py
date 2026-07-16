@@ -36,6 +36,12 @@ VIEWS_DIR = Path(__file__).parent / "views"
 
 OUTPUT_FILES = ("reading.json", "human.txt", "agent.txt")
 
+OUTPUT_LABELS = {
+    "reading.json": "normalized reading",
+    "human.txt": "human view",
+    "agent.txt": "agent view",
+}
+
 
 # --------------------------------------------------------------------------------------
 # Loading a case into the view model the real code consumes.
@@ -149,6 +155,78 @@ def render_outputs(case: LoadedCase) -> dict[str, str]:
         "human.txt": render_human(case, styles=True),
         "agent.txt": render_agent(case),
     }
+
+
+def kind_for(filename: str) -> str:
+    """Classify a story file into a content kind for viewer rendering."""
+    if filename.endswith((".yaml", ".yml")):
+        return "yaml"
+    if filename == "reading.json":
+        return "reading"
+    if filename.endswith(".json"):
+        return "json"
+    if filename == "human.txt":
+        return "ansi"
+    return "text"
+
+
+def serialise_story(case_dir: Path) -> dict:
+    """Build one story payload with inputs, live outputs, and golden status."""
+    case = load_case(case_dir)
+    live = render_outputs(case)
+
+    cells: list[dict] = []
+
+    cells.append(
+        {
+            "cid": "case.yaml",
+            "label": "spec",
+            "filename": "case.yaml",
+            "content": (case_dir / "case.yaml").read_text(encoding="utf-8"),
+            "kind": "yaml",
+            "side": "input",
+            "status": None,
+        }
+    )
+    for name in case.input_names:
+        cells.append(
+            {
+                "cid": name,
+                "label": "captured tool output",
+                "filename": name,
+                "content": (case_dir / name).read_text(encoding="utf-8"),
+                "kind": kind_for(name),
+                "side": "input",
+                "status": None,
+            }
+        )
+
+    for name in OUTPUT_FILES:
+        golden_path = case_dir / name
+        approved = golden_path.read_text(encoding="utf-8") if golden_path.exists() else None
+        live_text = live[name]
+        status = "unapproved" if approved is None else ("match" if live_text == approved else "differ")
+        kind = kind_for(name)
+        cell: dict = {
+            "cid": name,
+            "label": OUTPUT_LABELS.get(name, name),
+            "filename": name,
+            "content": live_text,
+            "kind": kind,
+            "side": "output",
+            "status": status,
+        }
+        if kind == "reading":
+            cell["readingData"] = json.loads(live_text)
+        cells.append(cell)
+
+    all_match = all(c["status"] == "match" for c in cells if c["side"] == "output")
+    return {"name": case_dir.name, "cells": cells, "allMatch": all_match}
+
+
+def serialise_stories() -> list[dict]:
+    """Build all story payloads under tests/views/."""
+    return [serialise_story(d) for d in case_dirs()]
 
 
 def case_dirs() -> list[Path]:

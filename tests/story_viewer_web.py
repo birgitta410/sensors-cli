@@ -15,10 +15,9 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import sys
 from pathlib import Path
 
-from tests.story_lib import OUTPUT_FILES, case_dirs, load_case, render_outputs
+from tests.story_lib import serialise_stories
 
 # ---------------------------------------------------------------------------
 # ANSI → HTML conversion
@@ -106,86 +105,6 @@ def ansi_to_html(text: str) -> str:
 
 def _escape_html(text: str) -> str:
     return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-
-
-# ---------------------------------------------------------------------------
-# Story serialisation
-# ---------------------------------------------------------------------------
-
-_OUTPUT_LABELS = {
-    "reading.json": "normalized reading",
-    "human.txt": "human view",
-    "agent.txt": "agent view",
-}
-
-
-def _kind_for(filename: str) -> str:
-    if filename.endswith((".yaml", ".yml")):
-        return "yaml"
-    if filename == "reading.json":
-        return "reading"
-    if filename.endswith(".json"):
-        return "json"
-    if filename == "human.txt":
-        return "ansi"
-    return "text"
-
-
-def serialise_story(case_dir: Path) -> dict:
-    case = load_case(case_dir)
-    live = render_outputs(case)
-
-    cells = []
-
-    # --- inputs ---
-    cells.append({
-        "cid": "case.yaml",
-        "label": "spec",
-        "filename": "case.yaml",
-        "content": (case_dir / "case.yaml").read_text(encoding="utf-8"),
-        "kind": "yaml",
-        "side": "input",
-        "status": None,
-    })
-    for name in case.input_names:
-        cells.append({
-            "cid": name,
-            "label": "captured tool output",
-            "filename": name,
-            "content": (case_dir / name).read_text(encoding="utf-8"),
-            "kind": _kind_for(name),
-            "side": "input",
-            "status": None,
-        })
-
-    # --- outputs ---
-    for name in OUTPUT_FILES:
-        golden_path = case_dir / name
-        approved = golden_path.read_text(encoding="utf-8") if golden_path.exists() else None
-        live_text = live[name]
-        status = "unapproved" if approved is None else ("match" if live_text == approved else "differ")
-        kind = _kind_for(name)
-        cell: dict = {
-            "cid": name,
-            "label": _OUTPUT_LABELS.get(name, name),
-            "filename": name,
-            "content": live_text,
-            "kind": kind,
-            "side": "output",
-            "status": status,
-        }
-        if kind == "reading":
-            # Embed the parsed object so JS can build the visual view without re-parsing
-            cell["readingData"] = json.loads(live_text)
-        cells.append(cell)
-
-    all_match = all(c["status"] == "match" for c in cells if c["side"] == "output")
-    return {"name": case_dir.name, "cells": cells, "allMatch": all_match}
-
-
-def build_stories_json() -> str:
-    stories = [serialise_story(d) for d in case_dirs()]
-    return json.dumps(stories, ensure_ascii=False)
 
 
 # ---------------------------------------------------------------------------
@@ -982,9 +901,8 @@ if (STORIES.length > 0) {
 # ---------------------------------------------------------------------------
 
 def prepare_stories() -> list[dict]:
-    stories = []
-    for case_dir in case_dirs():
-        story = serialise_story(case_dir)
+  stories = []
+  for story in serialise_stories():
         for cell in story["cells"]:
             if cell["kind"] == "ansi":
                 cell["htmlContent"] = ansi_to_html(cell["content"])

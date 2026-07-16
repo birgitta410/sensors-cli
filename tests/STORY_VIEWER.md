@@ -165,7 +165,9 @@ uv run pytest tests/test_views.py
 Adding a case never touches the harness: drop a folder with `case.yaml` + an input
 file, run `--approve` once, review, commit.
 
-## 7. The viewer (`tests/story_viewer_web.py`)
+## 7. The viewers
+
+### Web viewer (`tests/story_viewer_web.py`)
 
 ```bash
 uv run python -m tests.story_viewer_web          # writes tests/story_viewer.html
@@ -198,6 +200,25 @@ Rendering details:
 Badges: `✓ approved` (live == golden) · `✗ differs` · `⚠ not approved`.
 
 Keyboard shortcuts: `←`/`p` and `→`/`n` switch between stories.
+
+### Terminal viewer (`tests/story_viewer_tui.py`)
+
+```bash
+uv run python -m tests.story_viewer_tui
+```
+
+Interactive keyboard controls:
+- `q`: quit
+- `n` / `p` or `→` / `←`: next / previous story
+- `Tab`: cycle focus through `sidebar`, `inputs`, `normalized reading`, `human view`, `agent view`
+- `j` / `k` or `↓` / `↑`: move within focused pane (story list or scroll)
+- `Enter`: open selected sidebar story
+- `s`: toggle sidebar
+
+The terminal viewer uses the same story payload as the web viewer and renders
+`human.txt` with ANSI-aware terminal styling.
+The outputs area is split into three independent panels (one per output), each
+with its own scroll position.
 
 ## 8. Design decisions (and why)
 
@@ -275,6 +296,8 @@ this system is meant to surface. **Not changed** — flagged for a decision.
 SENSORS_APPROVE=1 uv run pytest tests/test_views.py   # (re)generate goldens
 uv run pytest tests/test_views.py                     # verify against goldens
 uv run python -m tests.story_viewer_web --open        # build + open the web viewer
+uv run python -m tests.story_viewer_tui               # open the terminal viewer
 
 # web viewer keys: ←/p  →/n  switch story
+# terminal viewer keys: Tab  j/k  Enter  n/p  s  q
 ```

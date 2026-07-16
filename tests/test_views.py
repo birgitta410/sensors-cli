@@ -13,6 +13,8 @@ Workflow:
     uv run pytest tests/test_views.py
     # browse the stories in the web viewer:
     uv run python -m tests.story_viewer_web --open
+    # browse the stories in the terminal viewer:
+    uv run python -m tests.story_viewer_tui
 """
 
 from __future__ import annotations
